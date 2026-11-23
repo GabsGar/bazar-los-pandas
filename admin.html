@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bazar Los Pandas - Panel Admin (Gabs)</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090D16',
+                        darkCard: '#131A29',
+                        darkBorder: '#263248',
+                        primary: '#10B981',
+                        primaryHover: '#059669',
+                        accent: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #090D16; color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #090D16; }
+        ::-webkit-scrollbar-thumb { background: #263248; border-radius: 4px; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-darkBg text-slate-100">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-slate-700 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+        <div>
+            <h4 id="toastTitle" class="font-semibold text-sm">Notificación</h4>
+            <p id="toastMsg" class="text-xs text-slate-400">Mensaje aquí</p>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-2xl max-w-md w-full p-6 shadow-2xl">
+            <h3 id="confirmTitle" class="text-lg font-bold mb-2">¿Estás seguro?</h3>
+            <p id="confirmDesc" class="text-sm text-slate-400 mb-6">Esta acción no se puede deshacer.</p>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeConfirmModal(false)" class="px-4 py-2 rounded-xl text-sm font-medium bg-slate-800 hover:bg-slate-700 transition">Cancelar</button>
+                <button id="confirmBtn" class="px-4 py-2 rounded-xl text-sm font-medium bg-rose-600 hover:bg-rose-500 transition text-white">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Overlay (Required for Gabs) -->
+    <div id="loginOverlay" class="fixed inset-0 z-50 bg-darkBg flex items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-md w-full p-8 shadow-2xl space-y-6">
+            <div class="text-center space-y-2">
+                <div class="w-16 h-16 rounded-2xl bg-white text-slate-950 flex items-center justify-center text-3xl mx-auto border-2 border-emerald-400 shadow-lg shadow-emerald-500/20 select-none">
+                    🐼
+                </div>
+                <h1 class="text-2xl font-extrabold tracking-tight text-white">Bazar Los Pandas</h1>
+                <p class="text-xs text-slate-400">Panel Exclusivo de Administración (Gabs)</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" autocomplete="off" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Usuario</label>
+                    <input type="text" id="loginUser" required autocomplete="off" placeholder="Usuario" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Contraseña</label>
+                    <input type="password" id="loginPass" required autocomplete="new-password" placeholder="Contraseña" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                </div>
+                <button type="submit" class="w-full py-3.5 rounded-2xl bg-primary hover:bg-primaryHover text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20">
+                    Iniciar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Admin Layout -->
+    <div id="adminMainContent" class="hidden flex-1 flex flex-col">
+        <!-- Navbar -->
+        <header class="sticky top-0 z-40 bg-darkCard/85 backdrop-blur-md border-b border-darkBorder">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-white text-slate-950 flex items-center justify-center shadow-lg border-2 border-emerald-400 text-2xl select-none shrink-0">
+                        🐼
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white">Bazar Los Pandas • Admin</h1>
+                        <p class="text-xs text-slate-400 flex items-center gap-1.5">
+                            <span id="firebaseStatusDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span id="firebaseStatusText">Sincronizando Firebase...</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="openSettingsModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-emerald-500/15 border border-emerald-500/30 hover:bg-emerald-500/25 text-xs font-semibold text-emerald-300 transition flex items-center gap-2" title="Configurar WhatsApp y datos bancarios">
+                        <i class="fa-solid fa-sliders text-sm"></i>
+                        <span class="hidden md:inline">Contacto y Pagos</span>
+                        <span class="md:hidden">Pagos/WA</span>
+                    </button>
+                    <button onclick="openCategoryModal()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-slate-900 border border-darkBorder hover:bg-slate-800 text-xs font-semibold text-slate-200 transition flex items-center gap-2">
+                        <i class="fa-solid fa-folder-tree text-emerald-400"></i> <span class="hidden sm:inline">Categorías</span>
+                    </button>
+                    <button onclick="handleLogout()" class="px-3 sm:px-4 py-2.5 rounded-xl bg-rose-600/20 hover:bg-rose-600/30 border border-rose-500/30 text-xs font-semibold text-rose-300 transition flex items-center gap-2">
+                        <i class="fa-solid fa-right-from-bracket"></i> <span class="hidden sm:inline">Salir</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+            
+            <!-- Banner de Ayuda Permisos Firebase -->
+            <div id="firestoreRulesBanner" class="hidden bg-amber-500/10 border border-amber-500/40 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="flex items-start gap-3">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400 text-xl mt-0.5"></i>
+                    <div>
+                        <h4 class="text-sm font-bold text-amber-300">Atención: Base de datos de Firebase bloqueada o sin reglas públicas</h4>
+                        <p class="text-xs text-slate-300 mt-0.5">Tu inventario se está guardando localmente, pero para que se vea en otros dispositivos debes ir a <strong>Firebase Console &gt; Firestore Database &gt; Reglas (Rules)</strong> y permitir lectura/escritura pública.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Artículos</p>
+                        <h3 id="statTotal" class="text-2xl font-bold text-white mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-darkBorder flex items-center justify-center text-slate-200 text-xl">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Disponibles</p>
+                        <h3 id="statAvailable" class="text-2xl font-bold text-emerald-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Apartados</p>
+                        <h3 id="statReserved" class="text-2xl font-bold text-amber-400 mt-1">0</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
+                        <i class="fa-solid fa-clock"></i>
+                    </div>
+                </div>
+                <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Merch</p>
+                        <h3 id="statValue" class="text-2xl font-bold text-emerald-300 mt-1">$0.00</h3>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-300 text-xl">
+                        <i class="fa-solid fa-dollar-sign"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form & Table -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Product Form -->
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl lg:col-span-1 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 id="formTitle" class="font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-plus-circle text-emerald-400"></i> Nueva Merch
+                        </h3>
+                        <button type="button" onclick="resetProductForm()" id="cancelEditBtn" class="hidden text-xs text-slate-400 hover:text-white underline">Cancelar</button>
+                    </div>
+
+                    <form id="productForm" onsubmit="saveProduct(event)" class="space-y-4">
+                        <input type="hidden" id="editProductId">
+                        
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Nombre del Artículo</label>
+                            <input type="text" id="prodName" required placeholder="Ej. Termo Conmemorativo / Playera Gira" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Concierto / Evento CDMX <span class="text-slate-500 font-normal lowercase">(Opcional)</span></label>
+                            <input type="text" id="prodEvent" placeholder="Ej. Vive Latino / Estadio GNP / Palacio" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Precio ($)</label>
+                                <input type="number" step="0.01" id="prodPrice" required placeholder="0.00" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Estado</label>
+                                <select id="prodStatus" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                                    <option value="Disponible">Disponible</option>
+                                    <option value="Apartado">Apartado</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Categoría</label>
+                                <select id="prodCategory" onchange="updateSubcategoryDropdown()" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition"></select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Subcategoría</label>
+                                <select id="prodSubcategory" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition"></select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Descripción / Talla / Capacidad</label>
+                            <textarea id="prodDesc" rows="3" placeholder="Ej. Talla M, algodón pesado, estampado frente y espalda..." class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition resize-none"></textarea>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">Fotos <span class="text-slate-500 font-normal lowercase">(Hasta 5 imágenes)</span></label>
+                                <span id="photoCountBadge" class="text-[11px] text-slate-400">0 / 5 fotos</span>
+                            </div>
+                            <label id="uploadLabelBtn" class="cursor-pointer bg-slate-950 border border-darkBorder hover:border-primary rounded-xl px-4 py-3 flex items-center justify-center gap-2 text-sm text-slate-300 transition">
+                                <i class="fa-solid fa-camera text-emerald-400"></i>
+                                <span id="imageFileName">Agregar o tomar fotos (Máx. 5)</span>
+                                <input type="file" id="prodImageFiles" accept="image/*" multiple onchange="handleMultipleImagesUpload(event)" class="hidden">
+                            </label>
+                            
+                            <div id="multiImagesPreviewContainer" class="mt-3 hidden space-y-2">
+                                <div id="imagesGridPreview" class="grid grid-cols-5 gap-2"></div>
+                                <p class="text-[11px] text-slate-500 italic text-center">Haz clic en el botón rojo para quitar una foto individual.</p>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="submitProductBtn" class="w-full py-3.5 rounded-2xl bg-primary hover:bg-primaryHover text-slate-950 font-bold text-sm transition shadow-lg shadow-emerald-500/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar en Catálogo
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Products & Apartados Management -->
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl lg:col-span-2 space-y-6">
+                    <div class="flex items-center justify-between">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-emerald-400"></i> Inventario de Merch y Validación de Pagos
+                        </h3>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead class="bg-slate-950/80 text-slate-400 text-xs uppercase tracking-wider border-b border-darkBorder">
+                                <tr>
+                                    <th class="py-3 px-4">Artículo</th>
+                                    <th class="py-3 px-4">Categoría / Evento</th>
+                                    <th class="py-3 px-4">Precio</th>
+                                    <th class="py-3 px-4">Estado</th>
+                                    <th class="py-3 px-4 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminProductTableBody" class="divide-y divide-darkBorder/60"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Contact & Payment Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-5 max-h-[92vh] overflow-y-auto">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-emerald-400"></i> Contacto y Datos de Pago
+                </h3>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <form onsubmit="saveStoreSettings(event)" class="space-y-4">
+                <!-- WhatsApp Section -->
+                <div class="bg-slate-950/70 border border-darkBorder rounded-2xl p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp de Pedidos
+                        </span>
+                        <span id="currentWhatsappPreview" class="text-[11px] text-slate-400 font-mono">55 3735 4414</span>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Número a 10 dígitos (México)</label>
+                        <div class="flex items-center bg-slate-900 border border-darkBorder rounded-xl overflow-hidden focus-within:border-primary transition">
+                            <span class="px-3 py-2.5 text-xs font-bold text-slate-400 bg-slate-800 border-r border-darkBorder">+52</span>
+                            <input type="tel" id="whatsappNumberInput" required maxlength="15" placeholder="5537354414" class="w-full bg-transparent px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bank Details Section -->
+                <div class="bg-slate-950/70 border border-darkBorder rounded-2xl p-4 space-y-3">
+                    <span class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-building-columns text-sm"></i> Cuenta para Transferencias SPEI
+                    </span>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Banco / Institución</label>
+                        <input type="text" id="bankNameInput" required placeholder="Ej. Nubank / BBVA" class="w-full bg-slate-900 border border-darkBorder rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">CLABE Interbancaria (18 dígitos)</label>
+                        <input type="text" id="bankClabeInput" required maxlength="22" placeholder="638180000160570982" class="w-full bg-slate-900 border border-darkBorder rounded-xl px-3.5 py-2.5 text-sm font-mono text-slate-100 focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-400 mb-1">Nombre del Titular</label>
+                        <input type="text" id="bankHolderInput" required placeholder="Nombre completo del titular" class="w-full bg-slate-900 border border-darkBorder rounded-xl px-3.5 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                    </div>
+                </div>
+
+                <div class="flex gap-3 pt-1">
+                    <button type="button" onclick="closeSettingsModal()" class="flex-1 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition">Cancelar</button>
+                    <button type="submit" class="flex-1 py-3 rounded-xl bg-primary hover:bg-primaryHover text-slate-950 text-xs font-bold transition shadow-lg shadow-emerald-500/20">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Category Modal -->
+    <div id="categoryModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white">Gestionar Categorías</h3>
+                <button onclick="closeCategoryModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="addNewCategory(event)" class="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-darkBorder">
+                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Nueva Categoría Principal</h4>
+                <div class="flex gap-2">
+                    <input type="text" id="newCategoryName" required placeholder="Ej. Coleccionables..." class="flex-1 bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none">
+                    <button type="submit" class="px-4 py-2.5 rounded-xl bg-primary text-slate-950 text-xs font-bold">Agregar</button>
+                </div>
+            </form>
+            <form onsubmit="addNewSubcategory(event)" class="space-y-3 bg-slate-950/60 p-4 rounded-2xl border border-darkBorder">
+                <h4 class="text-xs font-semibold uppercase tracking-wider text-slate-300">Nueva Subcategoría</h4>
+                <div class="grid grid-cols-2 gap-2">
+                    <select id="parentCategorySelect" required class="bg-slate-950 border border-darkBorder rounded-xl px-3 py-2.5 text-sm text-slate-100 focus:outline-none"></select>
+                    <input type="text" id="newSubcategoryName" required placeholder="Ej. Tote Bags..." class="bg-slate-950 border border-darkBorder rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-darkBorder text-white text-xs font-semibold">Agregar Subcategoría</button>
+            </form>
+            <div id="categoryStructureList" class="space-y-2 max-h-40 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="imageLightboxModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden items-center justify-center p-4 cursor-pointer" onclick="closeImageLightbox()">
+        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center cursor-default" onclick="event.stopPropagation()">
+            <button onclick="closeImageLightbox()" class="absolute -top-12 right-0 text-white/80 hover:text-white text-2xl p-2 transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <img id="lightboxImage" src="" class="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-slate-700/50 bg-black">
+            <p id="lightboxCaption" class="mt-3 text-slate-300 text-sm font-semibold text-center"></p>
+        </div>
+    </div>
+
+    <!-- Firebase SDK & Admin Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const STORE_ID = 'bazar-los-pandas-v1';
+        const LOCAL_PROD_KEY = 'bazar_pandas_products_v1';
+        const LOCAL_CAT_KEY = 'bazar_pandas_categories_v1';
+        const LOCAL_SETTINGS_KEY = 'bazar_pandas_settings_v1';
+
+        const DEFAULT_SETTINGS = {
+            whatsapp: '5537354414',
+            bankName: 'Nubank',
+            bankClabe: '638180000160570982',
+            bankHolder: 'Ana Karen García Ballesteros'
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrggadUfxvXX2CUeuOH7-4yz44jMKi7HY",
+            authDomain: "bazar-san-francisco.firebaseapp.com",
+            projectId: "bazar-san-francisco",
+            storageBucket: "bazar-san-francisco.firebasestorage.app",
+            messagingSenderId: "533232515128",
+            appId: "1:533232515128:web:910d488b5bf0d7e0d28ecd"
+        };
+
+        let db, auth;
+        let isAdminLoggedIn = false;
+        let inactivityTimer = null;
+        const INACTIVITY_LIMIT = 5 * 60 * 1000;
+
+        let categoriesData = loadLocalCategories();
+        let productsData = loadLocalProducts();
+        let storeSettings = loadLocalSettings();
+        let currentProductImages = [];
+        let pendingConfirmCallback = null;
+        const syncChannel = new BroadcastChannel('bazar_los_pandas_sync');
+
+        function normalizePhone(raw) {
+            const digits = String(raw || '').replace(/\D/g, '');
+            if (digits.length === 12 && digits.startsWith('52')) return digits.slice(2);
+            if (digits.length === 13 && digits.startsWith('521')) return digits.slice(3);
+            return digits || DEFAULT_SETTINGS.whatsapp;
+        }
+
+        function formatPhoneDisplay(digits) {
+            const clean = normalizePhone(digits);
+            if (clean.length === 10) {
+                return `${clean.slice(0, 2)} ${clean.slice(2, 6)} ${clean.slice(6)}`;
+            }
+            return clean;
+        }
+
+        function loadLocalSettings() {
+            try {
+                const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
+                if (!raw) return { ...DEFAULT_SETTINGS };
+                const parsed = JSON.parse(raw);
+                return {
+                    whatsapp: normalizePhone(parsed.whatsapp || DEFAULT_SETTINGS.whatsapp),
+                    bankName: parsed.bankName || DEFAULT_SETTINGS.bankName,
+                    bankClabe: parsed.bankClabe || DEFAULT_SETTINGS.bankClabe,
+                    bankHolder: parsed.bankHolder || DEFAULT_SETTINGS.bankHolder
+                };
+            } catch (e) {
+                return { ...DEFAULT_SETTINGS };
+            }
+        }
+
+        function saveLocalSettings(newSettings) {
+            storeSettings = {
+                whatsapp: normalizePhone(newSettings.whatsapp || storeSettings.whatsapp),
+                bankName: (newSettings.bankName || storeSettings.bankName).trim(),
+                bankClabe: (newSettings.bankClabe || storeSettings.bankClabe).trim(),
+                bankHolder: (newSettings.bankHolder || storeSettings.bankHolder).trim()
+            };
+            try {
+                localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(storeSettings));
+            } catch (e) {
+                console.warn("Local storage settings error:", e);
+            }
+            updateSettingsPreview();
+        }
+
+        function updateSettingsPreview() {
+            const preview = document.getElementById('currentWhatsappPreview');
+            if (preview) preview.textContent = formatPhoneDisplay(storeSettings.whatsapp);
+        }
+
+        function loadLocalProducts() {
+            try {
+                const raw = localStorage.getItem(LOCAL_PROD_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLocalProducts(list) {
+            try {
+                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list));
+            } catch (e) {
+                console.warn("Local storage quota notice:", e);
+            }
+        }
+
+        function loadLocalCategories() {
+            const defaults = {
+                "Playeras y Sudaderas": ["Playeras", "Hoodies", "Manga Larga", "Edición Especial"],
+                "Termos y Vasos": ["Termos", "Vasos Conmemorativos", "Tazas", "Cilindros"],
+                "Bolsas y Accesorios": ["Bolsas de Tela (Tote Bags)", "Gorras", "Pines y Llaveros", "Pósters y Pulseras"]
+            };
+            try {
+                const raw = localStorage.getItem(LOCAL_CAT_KEY);
+                return raw ? JSON.parse(raw) : defaults;
+            } catch (e) {
+                return defaults;
+            }
+        }
+
+        function saveLocalCategories(cats) {
+            try {
+                localStorage.setItem(LOCAL_CAT_KEY, JSON.stringify(cats));
+            } catch (e) {
+                console.warn("Local storage cat error:", e);
+            }
+        }
+
+        function broadcastChanges() {
+            saveLocalProducts(productsData);
+            saveLocalCategories(categoriesData);
+            saveLocalSettings(storeSettings);
+            syncChannel.postMessage({
+                type: 'SYNC_ALL',
+                products: productsData,
+                categories: categoriesData,
+                settings: storeSettings
+            });
+        }
+
+        syncChannel.onmessage = (event) => {
+            if (event.data.type === 'SYNC_ALL' || event.data.type === 'SYNC_PRODUCTS') {
+                if (event.data.products) productsData = event.data.products;
+                if (event.data.payload) productsData = event.data.payload;
+                if (event.data.categories) categoriesData = event.data.categories;
+                if (event.data.settings) saveLocalSettings(event.data.settings);
+                saveLocalProducts(productsData);
+                renderAdmin();
+            } else if (event.data.type === 'REQUEST_SYNC') {
+                broadcastChanges();
+            }
+        };
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === LOCAL_PROD_KEY) {
+                productsData = loadLocalProducts();
+                renderAdmin();
+            } else if (e.key === LOCAL_CAT_KEY) {
+                categoriesData = loadLocalCategories();
+                renderAdmin();
+            } else if (e.key === LOCAL_SETTINGS_KEY) {
+                storeSettings = loadLocalSettings();
+                updateSettingsPreview();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            updateSettingsPreview();
+            renderAdmin();
+
+            if (sessionStorage.getItem('bazar_pandas_admin_session') === 'true') {
+                isAdminLoggedIn = true;
+                showAdminDashboard();
+                initInactivityTimer();
+            }
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                try {
+                    await signInAnonymously(auth);
+                } catch (authErr) {
+                    console.warn("Anonymous auth disabled in Firebase Console, continuing direct connection:", authErr);
+                }
+                updateStatus(true, "Conectado a Firebase");
+                initListeners();
+            } catch (err) {
+                console.warn("Firebase init error:", err);
+                updateStatus(false, "Modo Sincronización Local");
+            }
+
+            ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
+                window.addEventListener(evt, resetInactivityTimer);
+            });
+        });
+
+        function initInactivityTimer() {
+            resetInactivityTimer();
+        }
+        function resetInactivityTimer() {
+            if (!isAdminLoggedIn) return;
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            inactivityTimer = setTimeout(() => {
+                handleLogout();
+                showToast("Sesión Expirada", "Inactividad de 5 minutos", "error");
+            }, INACTIVITY_LIMIT);
+        }
+
+        window.handleLogin = function(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUser').value.trim();
+            const p = document.getElementById('loginPass').value.trim();
+            if (u === 'Gabs' && p === 'Shini2208') {
+                isAdminLoggedIn = true;
+                sessionStorage.setItem('bazar_pandas_admin_session', 'true');
+                showAdminDashboard();
+                initInactivityTimer();
+                showToast("Bienvenido", "Sesión iniciada como Gabs", "success");
+            } else {
+                showToast("Error", "Credenciales incorrectas", "error");
+            }
+        };
+
+        window.handleLogout = function() {
+            isAdminLoggedIn = false;
+            sessionStorage.removeItem('bazar_pandas_admin_session');
+            if (inactivityTimer) clearTimeout(inactivityTimer);
+            document.getElementById('adminMainContent').classList.add('hidden');
+            document.getElementById('loginOverlay').classList.remove('hidden');
+        };
+
+        function showAdminDashboard() {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('adminMainContent').classList.remove('hidden');
+            updateSettingsPreview();
+            renderAdmin();
+        }
+
+        function updateStatus(ok, text) {
+            const dot = document.getElementById('firebaseStatusDot');
+            const txt = document.getElementById('firebaseStatusText');
+            if (dot && txt) {
+                dot.className = `w-2 h-2 rounded-full ${ok ? 'bg-emerald-400 animate-pulse' : 'bg-amber-500'}`;
+                txt.textContent = text;
+            }
+        }
+
+        function initListeners() {
+            if (!db) return;
+            const prodRef = collection(db, 'artifacts', STORE_ID, 'public', 'data', 'products');
+            onSnapshot(prodRef, snap => {
+                const cloudProducts = [];
+                snap.forEach(d => cloudProducts.push({ id: d.id, ...d.data() }));
+
+                const mergedMap = new Map();
+                productsData.forEach(p => mergedMap.set(p.id, p));
+                cloudProducts.forEach(p => {
+                    const localItem = mergedMap.get(p.id);
+                    if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
+                        mergedMap.set(p.id, p);
+                    }
+                });
+                productsData = Array.from(mergedMap.values());
+                saveLocalProducts(productsData);
+
+                document.getElementById('firestoreRulesBanner')?.classList.add('hidden');
+                updateStatus(true, "Sincronizado con Firebase");
+                renderAdmin();
+            }, (error) => {
+                console.warn("Firestore permissions note:", error);
+                document.getElementById('firestoreRulesBanner')?.classList.remove('hidden');
+                updateStatus(false, "Sincronización Local Activa (Revisa Reglas Firebase)");
+            });
+
+            const catRef = doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'categories');
+            onSnapshot(catRef, docSnap => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && data.categories) {
+                        categoriesData = data.categories;
+                        saveLocalCategories(categoriesData);
+                    }
+                }
+                renderAdmin();
+            }, (error) => {
+                console.warn("Categories listener notice:", error);
+            });
+
+            const settingsRef = doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'settings');
+            onSnapshot(settingsRef, docSnap => {
+                if (docSnap.exists()) {
+                    saveLocalSettings(docSnap.data());
+                }
+            }, (error) => {
+                console.warn("Settings listener notice:", error);
+            });
+        }
+
+        // Contact & Payment Settings Modal Logic
+        window.openSettingsModal = function() {
+            document.getElementById('whatsappNumberInput').value = normalizePhone(storeSettings.whatsapp);
+            document.getElementById('bankNameInput').value = storeSettings.bankName;
+            document.getElementById('bankClabeInput').value = storeSettings.bankClabe;
+            document.getElementById('bankHolderInput').value = storeSettings.bankHolder;
+            updateSettingsPreview();
+            const modal = document.getElementById('settingsModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeSettingsModal = function() {
+            const modal = document.getElementById('settingsModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveStoreSettings = async function(e) {
+            e.preventDefault();
+            const rawWa = document.getElementById('whatsappNumberInput').value;
+            const digitsWa = rawWa.replace(/\D/g, '');
+            const cleanWa = (digitsWa.length === 12 && digitsWa.startsWith('52')) ? digitsWa.slice(2) : digitsWa;
+
+            if (cleanWa.length !== 10) {
+                showToast("Número Inválido", "Ingresa un WhatsApp válido de 10 dígitos", "error");
+                return;
+            }
+
+            const bankName = document.getElementById('bankNameInput').value.trim();
+            const bankClabe = document.getElementById('bankClabeInput').value.replace(/\s+/g, '').trim();
+            const bankHolder = document.getElementById('bankHolderInput').value.trim();
+
+            if (!bankName || !bankClabe || !bankHolder) {
+                showToast("Campos Incompletos", "Completa todos los datos bancarios", "error");
+                return;
+            }
+
+            const updatedSettings = {
+                whatsapp: cleanWa,
+                bankName,
+                bankClabe,
+                bankHolder
+            };
+
+            saveLocalSettings(updatedSettings);
+            syncChannel.postMessage({ type: 'SYNC_SETTINGS', settings: storeSettings });
+            closeSettingsModal();
+
+            try {
+                if (db) {
+                    await setDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'settings'), {
+                        ...storeSettings,
+                        updatedAt: Date.now()
+                    }, { merge: true });
+                }
+                showToast("Configuración Guardada", "WhatsApp y datos bancarios actualizados", "success");
+            } catch (err) {
+                console.warn("Save settings error:", err);
+                showToast("Guardado Local", "Cambios aplicados en este navegador", "success");
+            }
+        };
+
+        window.renderAdmin = function() {
+            renderAdminTable();
+            renderStats();
+            renderCategoryDropdowns();
+            renderCategoryStructureList();
+        };
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminProductTableBody');
+            if (!tbody) return;
+            if (productsData.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 text-sm">Sin mercancía registrada en Bazar Los Pandas.</td></tr>`;
+                return;
+            }
+
+            let html = '';
+            productsData.forEach(p => {
+                const images = (p.images && Array.isArray(p.images) && p.images.length > 0) 
+                    ? p.images 
+                    : (p.imageUrl ? [p.imageUrl] : []);
+                const hasPhoto = images.length > 0;
+                const mainImg = hasPhoto ? images[0] : `https://placehold.co/100x100/131A29/64748B?text=Sin+Foto`;
+                let badge = p.status === 'Disponible' ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">Disponible</span>' :
+                            p.status === 'Apartado' ? '<span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold">Apartado</span>' :
+                            '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-400 text-xs font-semibold">Vendido</span>';
+
+                html += `
+                    <tr class="hover:bg-slate-950/40 transition">
+                        <td class="py-3 px-4 flex items-center gap-3">
+                            <div class="relative w-12 h-12 rounded-xl overflow-hidden border border-darkBorder bg-slate-950 flex-shrink-0 cursor-pointer group" onclick="${hasPhoto ? `openImageLightbox('${mainImg}', '${p.name}')` : ''}" title="${hasPhoto ? 'Ver foto en tamaño completo' : ''}">
+                                <img src="${mainImg}" class="w-full h-full object-cover group-hover:scale-110 transition duration-200" onerror="this.src='https://placehold.co/100x100/131A29/64748B?text=Sin+Foto'">
+                                ${images.length > 1 ? `<span class="absolute bottom-0 right-0 bg-black/80 text-[10px] text-white px-1 rounded-tl-md font-bold"><i class="fa-solid fa-layer-group"></i> ${images.length}</span>` : ''}
+                                ${hasPhoto ? `<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition"><i class="fa-solid fa-expand"></i></div>` : ''}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <p class="font-semibold text-white text-sm">${p.name}</p>
+                                    ${!hasPhoto ? `<span onclick="editProduct('${p.id}')" class="cursor-pointer px-1.5 py-0.5 rounded bg-slate-800 hover:bg-primary/30 text-[10px] text-slate-400 hover:text-emerald-300 border border-slate-700 transition"><i class="fa-solid fa-camera mr-1"></i>Subir foto</span>` : ''}
+                                </div>
+                                <p class="text-xs text-slate-500 line-clamp-1">${p.description || 'Sin descripción'}</p>
+                            </div>
+                        </td>
+                        <td class="py-3 px-4 text-slate-300 text-xs">
+                            <div>${p.category} / ${p.subcategory}</div>
+                            ${p.eventName ? `<span class="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-semibold"><i class="fa-solid fa-music mr-1"></i>${p.eventName}</span>` : ''}
+                        </td>
+                        <td class="py-3 px-4 font-bold text-emerald-400">$${Number(p.price).toFixed(2)}</td>
+                        <td class="py-3 px-4">${badge}</td>
+                        <td class="py-3 px-4 text-right flex items-center justify-end gap-2">
+                            ${p.status === 'Apartado' ? `<button onclick="markAsSold('${p.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs">Marcar Vendido</button>` : ''}
+                            <button onclick="toggleStatus('${p.id}')" title="Cambiar Estado" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-rotate"></i></button>
+                            <button onclick="editProduct('${p.id}')" title="Editar precio, descripción o fotos" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5">
+                                <i class="fa-solid fa-pen"></i> Editar
+                            </button>
+                            <button onclick="deleteProduct('${p.id}')" title="Eliminar" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-600 text-rose-400 hover:text-white"><i class="fa-solid fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            tbody.innerHTML = html;
+        }
+
+        function renderStats() {
+            document.getElementById('statTotal').textContent = productsData.length;
+            document.getElementById('statAvailable').textContent = productsData.filter(p => p.status === 'Disponible').length;
+            document.getElementById('statReserved').textContent = productsData.filter(p => p.status === 'Apartado').length;
+            const val = productsData.reduce((acc, p) => acc + (p.status !== 'Vendido' ? Number(p.price || 0) : 0), 0);
+            document.getElementById('statValue').textContent = `$${val.toFixed(2)}`;
+        }
+
+        function renderCategoryDropdowns() {
+            const catSelect = document.getElementById('prodCategory');
+            const parentSelect = document.getElementById('parentCategorySelect');
+            if (!catSelect) return;
+            const currentCat = catSelect.value;
+            let opts = '';
+            Object.keys(categoriesData).forEach(c => opts += `<option value="${c}">${c}</option>`);
+            catSelect.innerHTML = opts;
+            if (currentCat && categoriesData[currentCat]) {
+                catSelect.value = currentCat;
+            }
+            if (parentSelect) parentSelect.innerHTML = opts;
+            updateSubcategoryDropdown();
+        }
+
+        window.updateSubcategoryDropdown = function() {
+            const cat = document.getElementById('prodCategory').value;
+            const subSelect = document.getElementById('prodSubcategory');
+            const currentSub = subSelect.value;
+            const subs = categoriesData[cat] || [];
+            let opts = '';
+            subs.forEach(s => opts += `<option value="${s}">${s}</option>`);
+            subSelect.innerHTML = opts;
+            if (currentSub && subs.includes(currentSub)) {
+                subSelect.value = currentSub;
+            }
+        };
+
+        window.handleMultipleImagesUpload = function(e) {
+            const files = Array.from(e.target.files);
+            if (!files || files.length === 0) return;
+
+            const remainingSlots = 5 - currentProductImages.length;
+            if (remainingSlots <= 0) {
+                showToast("Límite Alcanzado", "Ya tienes las 5 fotos permitidas", "error");
+                return;
+            }
+
+            const filesToProcess = files.slice(0, remainingSlots);
+            document.getElementById('imageFileName').textContent = "Procesando fotos...";
+
+            let processedCount = 0;
+            filesToProcess.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 750;
+                        const MAX_HEIGHT = 750;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_WIDTH) {
+                                height *= MAX_WIDTH / width;
+                                width = MAX_WIDTH;
+                            }
+                        } else {
+                            if (height > MAX_HEIGHT) {
+                                width *= MAX_HEIGHT / height;
+                                height = MAX_HEIGHT;
+                            }
+                        }
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        const compressedB64 = canvas.toDataURL('image/jpeg', 0.72);
+
+                        if (currentProductImages.length < 5) {
+                            currentProductImages.push(compressedB64);
+                        }
+
+                        processedCount++;
+                        if (processedCount === filesToProcess.length) {
+                            updateImagesPreview();
+                            document.getElementById('imageFileName').textContent = currentProductImages.length >= 5 ? "Máximo de fotos alcanzado (5/5)" : "Agregar más fotos";
+                        }
+                    };
+                    img.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        window.removeSingleImage = function(index) {
+            currentProductImages.splice(index, 1);
+            updateImagesPreview();
+            document.getElementById('imageFileName').textContent = currentProductImages.length >= 5 ? "Máximo de fotos alcanzado (5/5)" : "Agregar fotos (Máx. 5)";
+        };
+
+        function updateImagesPreview() {
+            const container = document.getElementById('multiImagesPreviewContainer');
+            const grid = document.getElementById('imagesGridPreview');
+            const badge = document.getElementById('photoCountBadge');
+            const fileInput = document.getElementById('prodImageFiles');
+            if (fileInput) fileInput.value = '';
+
+            badge.textContent = `${currentProductImages.length} / 5 fotos`;
+            badge.className = currentProductImages.length > 0 ? "text-[11px] text-emerald-400 font-semibold" : "text-[11px] text-slate-400";
+
+            if (currentProductImages.length === 0) {
+                container.classList.add('hidden');
+                grid.innerHTML = '';
+                return;
+            }
+
+            container.classList.remove('hidden');
+            let html = '';
+            currentProductImages.forEach((imgBase64, idx) => {
+                html += `
+                    <div class="relative group h-20 rounded-xl overflow-hidden border border-darkBorder bg-slate-950">
+                        <img src="${imgBase64}" onclick="openImageLightbox('${imgBase64}', 'Foto ${idx + 1} de 5')" class="w-full h-full object-cover cursor-pointer hover:scale-105 transition">
+                        <span class="absolute top-1 left-1 bg-black/70 text-[9px] text-slate-200 font-bold px-1 rounded pointer-events-none">${idx + 1}</span>
+                        <div class="absolute top-1 right-1 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition">
+                            <button type="button" onclick="openImageLightbox('${imgBase64}', 'Foto ${idx + 1} de 5')" title="Ver en pantalla completa" class="bg-emerald-600/90 text-white w-6 h-6 rounded flex items-center justify-center text-[10px] hover:bg-emerald-500">
+                                <i class="fa-solid fa-expand"></i>
+                            </button>
+                            <button type="button" onclick="removeSingleImage(${idx})" title="Eliminar foto" class="bg-rose-600/90 text-white w-6 h-6 rounded flex items-center justify-center text-[10px] hover:bg-rose-500">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        }
+
+        window.openImageLightbox = function(src, caption) {
+            document.getElementById('lightboxImage').src = src;
+            document.getElementById('lightboxCaption').textContent = caption || '';
+            const modal = document.getElementById('imageLightboxModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.closeImageLightbox = function() {
+            const modal = document.getElementById('imageLightboxModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            const existingId = document.getElementById('editProductId').value;
+            const isEditing = Boolean(existingId);
+            const id = existingId || 'merch-' + Date.now();
+            const catVal = document.getElementById('prodCategory').value || Object.keys(categoriesData)[0] || 'Playeras y Sudaderas';
+            const subVal = document.getElementById('prodSubcategory').value || (categoriesData[catVal] && categoriesData[catVal][0]) || 'General';
+
+            const product = {
+                id: id,
+                name: document.getElementById('prodName').value.trim(),
+                eventName: document.getElementById('prodEvent').value.trim(),
+                price: parseFloat(document.getElementById('prodPrice').value) || 0,
+                status: document.getElementById('prodStatus').value || 'Disponible',
+                category: catVal,
+                subcategory: subVal,
+                description: document.getElementById('prodDesc').value.trim(),
+                images: currentProductImages.slice(0, 5),
+                imageUrl: currentProductImages.length > 0 ? currentProductImages[0] : '',
+                updatedAt: Date.now()
+            };
+
+            const existingIndex = productsData.findIndex(item => item.id === id);
+            if (existingIndex >= 0) {
+                productsData[existingIndex] = product;
+            } else {
+                productsData.push(product);
+            }
+            broadcastChanges();
+            renderAdmin();
+            resetProductForm();
+
+            try {
+                if (db) {
+                    await setDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), product, { merge: true });
+                    showToast(
+                        isEditing ? "Artículo Actualizado" : "Artículo Agregado",
+                        isEditing ? "Los cambios se guardaron exitosamente" : "Merch publicada en Bazar Los Pandas",
+                        "success"
+                    );
+                } else {
+                    showToast("Guardado", isEditing ? "Cambios aplicados" : "Artículo agregado al catálogo", "success");
+                }
+            } catch (err) {
+                console.error("Save error:", err);
+                document.getElementById('firestoreRulesBanner')?.classList.remove('hidden');
+                showToast("Guardado Local", "Visible inmediatamente en el catálogo de este navegador", "success");
+            }
+        };
+
+        window.editProduct = function(id) {
+            const p = productsData.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('editProductId').value = p.id;
+            document.getElementById('prodName').value = p.name;
+            document.getElementById('prodEvent').value = p.eventName || '';
+            document.getElementById('prodPrice').value = p.price;
+            document.getElementById('prodStatus').value = p.status;
+            document.getElementById('prodCategory').value = p.category;
+            updateSubcategoryDropdown();
+            document.getElementById('prodSubcategory').value = p.subcategory;
+            document.getElementById('prodDesc').value = p.description || '';
+            
+            if (p.images && Array.isArray(p.images) && p.images.length > 0) {
+                currentProductImages = [...p.images];
+            } else if (p.imageUrl && p.imageUrl.trim() !== '') {
+                currentProductImages = [p.imageUrl];
+            } else {
+                currentProductImages = [];
+            }
+            updateImagesPreview();
+
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-pen text-amber-400"></i> Editando: ${p.name}`;
+            document.getElementById('submitProductBtn').innerHTML = `<i class="fa-solid fa-check"></i> Actualizar Artículo`;
+            document.getElementById('cancelEditBtn').classList.remove('hidden');
+            document.getElementById('productForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+        };
+
+        window.resetProductForm = function() {
+            document.getElementById('productForm').reset();
+            document.getElementById('editProductId').value = '';
+            document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-plus-circle text-emerald-400"></i> Nueva Merch`;
+            document.getElementById('submitProductBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar en Catálogo`;
+            document.getElementById('cancelEditBtn').classList.add('hidden');
+            currentProductImages = [];
+            updateImagesPreview();
+            document.getElementById('imageFileName').textContent = 'Agregar o tomar fotos (Máx. 5)';
+        };
+
+        window.toggleStatus = async function(id) {
+            const p = productsData.find(item => item.id === id);
+            if (!p) return;
+            const next = p.status === 'Disponible' ? 'Apartado' : 'Disponible';
+            p.status = next;
+            p.updatedAt = Date.now();
+            broadcastChanges();
+            renderAdmin();
+            try {
+                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: next, updatedAt: p.updatedAt });
+                showToast("Estado Actualizado", `Ahora está ${next}`, "success");
+            } catch (err) {
+                console.warn("Update status error:", err);
+                showToast("Estado Actualizado", `Ahora está ${next}`, "success");
+            }
+        };
+
+        window.markAsSold = function(id) {
+            openConfirmModal("Marcar Vendido", "¿Confirmas que el pago fue verificado para retirar el artículo del catálogo?", async () => {
+                productsData = productsData.filter(item => item.id !== id);
+                broadcastChanges();
+                renderAdmin();
+                try {
+                    if (db) await deleteDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id));
+                } catch (err) {
+                    console.warn("Delete error:", err);
+                }
+                showToast("Completado", "Artículo marcado como vendido y retirado", "success");
+            });
+        };
+
+        window.deleteProduct = function(id) {
+            openConfirmModal("Eliminar", "¿Eliminar este artículo del inventario?", async () => {
+                productsData = productsData.filter(item => item.id !== id);
+                broadcastChanges();
+                renderAdmin();
+                try {
+                    if (db) await deleteDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id));
+                } catch (err) {
+                    console.warn("Delete error:", err);
+                }
+                showToast("Eliminado", "Artículo eliminado del catálogo", "success");
+            });
+        };
+
+        window.openCategoryModal = () => {
+            const modal = document.getElementById('categoryModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+        window.closeCategoryModal = () => {
+            const modal = document.getElementById('categoryModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.addNewCategory = async function(e) {
+            e.preventDefault();
+            const name = document.getElementById('newCategoryName').value.trim();
+            if (name && !categoriesData[name]) {
+                categoriesData[name] = [];
+                await saveCategories();
+                document.getElementById('newCategoryName').value = '';
+                showToast("Éxito", `Categoría "${name}" creada`, "success");
+            }
+        };
+
+        window.addNewSubcategory = async function(e) {
+            e.preventDefault();
+            const cat = document.getElementById('parentCategorySelect').value;
+            const sub = document.getElementById('newSubcategoryName').value.trim();
+            if (cat && sub && !categoriesData[cat].includes(sub)) {
+                categoriesData[cat].push(sub);
+                await saveCategories();
+                document.getElementById('newSubcategoryName').value = '';
+                showToast("Éxito", `Subcategoría "${sub}" agregada a ${cat}`, "success");
+            }
+        };
+
+        window.deleteCategory = async function(catName) {
+            openConfirmModal("Eliminar Categoría", `¿Estás seguro de eliminar la categoría "${catName}"?`, async () => {
+                delete categoriesData[catName];
+                await saveCategories();
+                showToast("Eliminado", "Categoría eliminada", "success");
+            });
+        };
+
+        window.deleteSubcategory = async function(catName, subName) {
+            categoriesData[catName] = categoriesData[catName].filter(s => s !== subName);
+            await saveCategories();
+            showToast("Eliminado", "Subcategoría eliminada", "success");
+        };
+
+        async function saveCategories() {
+            broadcastChanges();
+            renderAdmin();
+            try {
+                if (db) await setDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'categories'), { categories: categoriesData });
+            } catch (err) {
+                console.warn("Save categories error:", err);
+            }
+        }
+
+        function renderCategoryStructureList() {
+            const list = document.getElementById('categoryStructureList');
+            if (!list) return;
+            let html = '';
+            Object.keys(categoriesData).forEach(c => {
+                const subs = categoriesData[c] || [];
+                let subHtml = subs.map(s => `<span class="inline-flex items-center gap-1 bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg text-xs">${s} <button onclick="deleteSubcategory('${c}', '${s}')" class="text-rose-400 hover:text-rose-300 ml-1"><i class="fa-solid fa-xmark"></i></button></span>`).join(' ');
+                
+                html += `
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-darkBorder space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-white"><i class="fa-solid fa-folder text-emerald-400 mr-2"></i>${c}</span>
+                            <button onclick="deleteCategory('${c}')" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="flex flex-wrap gap-1.5 pt-1">
+                            ${subHtml || '<span class="text-xs text-slate-500 italic">Sin subcategorías</span>'}
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function openConfirmModal(title, desc, cb) {
+            document.getElementById('confirmTitle').textContent = title;
+            document.getElementById('confirmDesc').textContent = desc;
+            pendingConfirmCallback = cb;
+            document.getElementById('confirmModal').classList.remove('hidden');
+            document.getElementById('confirmModal').classList.add('flex');
+        }
+        window.closeConfirmModal = function(confirmed) {
+            document.getElementById('confirmModal').classList.add('hidden');
+            document.getElementById('confirmModal').classList.remove('flex');
+            if (confirmed && pendingConfirmCallback) pendingConfirmCallback();
+            pendingConfirmCallback = null;
+        };
+        document.getElementById('confirmBtn').onclick = () => closeConfirmModal(true);
+
+        window.showToast = function(title, msg, type = 'success') {
+            const t = document.getElementById('toast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3500);
+        };
+    </script>
+</body>
+</html>

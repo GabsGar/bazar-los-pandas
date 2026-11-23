@@ -1,0 +1,919 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bazar Los Pandas - Merch de Conciertos y Eventos CDMX</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#090D16',
+                        darkCard: '#131A29',
+                        darkBorder: '#263248',
+                        primary: '#10B981',
+                        primaryHover: '#059669',
+                        accent: '#F59E0B'
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #090D16; color: #F8FAFC; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #090D16; }
+        ::-webkit-scrollbar-thumb { background: #263248; border-radius: 4px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-darkBg text-slate-100">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 border border-slate-700 px-5 py-3 rounded-xl shadow-2xl flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
+        <div>
+            <h4 id="toastTitle" class="font-semibold text-sm">Notificación</h4>
+            <p id="toastMsg" class="text-xs text-slate-400">Mensaje aquí</p>
+        </div>
+    </div>
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-darkCard/85 backdrop-blur-md border-b border-darkBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-white text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/20 border-2 border-emerald-400 text-2xl select-none">
+                    🐼
+                </div>
+                <div>
+                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-400 bg-clip-text text-transparent">Bazar Los Pandas</h1>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Merch Oficial & Recuerdos de Conciertos CDMX</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <nav class="flex items-center bg-slate-950/70 p-1.5 rounded-2xl border border-darkBorder">
+                    <button onclick="switchTab('catalog')" id="nav-catalog" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-primary text-slate-950 shadow-md">
+                        <i class="fa-solid fa-ticket"></i> Catálogo
+                    </button>
+                    <button onclick="switchTab('payments')" id="nav-payments" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-wallet"></i> Info de pagos
+                    </button>
+                </nav>
+
+                <button onclick="openCartModal()" class="relative p-3 rounded-2xl bg-slate-900 border border-darkBorder hover:border-emerald-500/60 hover:bg-slate-800 transition text-slate-200">
+                    <i class="fa-solid fa-bag-shopping text-lg text-emerald-400"></i>
+                    <span id="cartBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center justify-center hidden">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- ================= CATALOG TAB ================= -->
+        <section id="tab-catalog" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-950/70 via-darkCard to-slate-950 border border-darkBorder p-7 sm:p-10 shadow-2xl flex flex-col md:flex-row justify-between items-center gap-6">
+                <div class="space-y-3 max-w-2xl">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase tracking-wider border border-emerald-500/30">
+                            <i class="fa-solid fa-music mr-1"></i> Conciertos & Festivales CDMX
+                        </span>
+                        <span class="px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 text-xs font-semibold uppercase tracking-wider border border-amber-500/30">
+                            Piezas Únicas
+                        </span>
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Llévate el recuerdo de tus conciertos favoritos</h2>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Termos conmemorativos, playeras, bolsas de tela (tote bags), vasos y artículos de eventos que ya pasaron en la CDMX. Aparta tus piezas al instante antes de que se agoten.</p>
+                </div>
+                <div class="hidden lg:flex flex-col items-center justify-center bg-slate-950/60 border border-darkBorder rounded-3xl p-5 text-center min-w-[190px]">
+                    <span class="text-4xl mb-2">🐼🎸</span>
+                    <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Entregas en CDMX</span>
+                    <span class="text-[11px] text-slate-400 mt-1">Punto medio o envío</span>
+                </div>
+            </div>
+
+            <!-- Search & Filters -->
+            <div class="bg-darkCard border border-darkBorder rounded-2xl p-4 sm:p-6 shadow-xl space-y-4">
+                <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                    <div class="relative w-full md:w-96">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar artista, termo, playera, bolsa..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition">
+                    </div>
+
+                    <div id="categoryFilters" class="flex items-center gap-2 overflow-x-auto w-full pb-2 md:pb-0 no-scrollbar">
+                        <button onclick="selectCategory('Todas')" class="category-filter-btn px-4 py-2 rounded-xl text-xs font-bold bg-primary text-slate-950 transition whitespace-nowrap shadow-md">Todas</button>
+                    </div>
+                </div>
+
+                <div id="subcategoryFiltersContainer" class="hidden pt-3 border-t border-darkBorder/60 flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <span class="text-xs text-slate-400 font-medium whitespace-nowrap"><i class="fa-solid fa-filter mr-1 text-emerald-400"></i> Tipo:</span>
+                    <div id="subcategoryFilters" class="flex items-center gap-2"></div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+
+            <div id="emptyCatalogState" class="hidden text-center py-16 space-y-4">
+                <div class="w-16 h-16 rounded-3xl bg-slate-900 border border-darkBorder flex items-center justify-center mx-auto text-3xl">
+                    🐼
+                </div>
+                <h3 class="text-lg font-bold text-white">No hay merch disponible con ese filtro</h3>
+                <p class="text-slate-400 text-sm max-w-sm mx-auto">Prueba con otra categoría o vuelve pronto para ver mercancía de nuevos eventos en CDMX.</p>
+            </div>
+        </section>
+
+        <!-- ================= PAYMENTS TAB ================= -->
+        <section id="tab-payments" class="hidden space-y-8 max-w-4xl mx-auto">
+            <div class="text-center space-y-3">
+                <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold uppercase tracking-wider border border-emerald-500/30">Métodos de Pago Seguros</span>
+                <h2 class="text-3xl font-extrabold tracking-tight text-white">¿Cómo pagar en Bazar Los Pandas?</h2>
+                <p class="text-slate-400 text-sm max-w-xl mx-auto">Aceptamos tarjeta, transferencia bancaria SPEI y efectivo en entregas personales en CDMX.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl space-y-4 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center text-2xl mx-auto border border-indigo-500/30">
+                        <i class="fa-solid fa-credit-card"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-white">Pago con Tarjeta</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Aceptamos tarjetas de crédito y débito de forma segura.</p>
+                </div>
+
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl space-y-4 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl mx-auto border border-emerald-500/30">
+                        <i class="fa-solid fa-building-columns"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-white">Transferencia</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Realiza tu pago vía SPEI y envía tu comprobante para confirmar tu apartado.</p>
+                    <button onclick="openBankDetailsModal()" class="mt-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition w-full">Ver Datos Bancarios</button>
+                </div>
+
+                <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl space-y-4 text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-2xl mx-auto border border-amber-500/30">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-white">Efectivo</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Pago contra entrega en punto acordado dentro de la CDMX.</p>
+                </div>
+            </div>
+
+            <div class="bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-2xl border border-emerald-500/30">
+                        <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-white text-base">Atención y Comprobantes por WhatsApp</h4>
+                        <p class="text-xs text-slate-400">Envía tu comprobante o coordina tu entrega en CDMX al <strong id="publicWhatsappDisplay" class="text-emerald-400">55 3735 4414</strong></p>
+                    </div>
+                </div>
+                <a id="publicWhatsappLink" href="https://wa.me/525537354414?text=Hola%2C%20tengo%20una%20consulta%20sobre%20la%20merch%20de%20Bazar%20Los%20Pandas" target="_blank" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition whitespace-nowrap flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Enviar Mensaje
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-bag-shopping text-emerald-400"></i> Tu Apartado de Merch
+                </h3>
+                <button onclick="closeCartModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div id="cartItemsList" class="space-y-3 max-h-60 overflow-y-auto divide-y divide-darkBorder/60"></div>
+            <div id="cartEmptyState" class="text-center py-8 text-slate-400 text-sm">Aún no has apartado artículos de conciertos.</div>
+            <div class="border-t border-darkBorder pt-4 space-y-3">
+                <div class="flex justify-between items-center text-sm font-semibold">
+                    <span>Total Estimado:</span>
+                    <span id="cartTotalPrice" class="text-lg text-emerald-400">$0.00</span>
+                </div>
+                <button onclick="sendWhatsAppApartado()" id="whatsappOrderBtn" disabled class="w-full py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-semibold text-sm transition flex items-center justify-center gap-2">
+                    <i class="fa-brands fa-whatsapp text-lg"></i> Confirmar Apartado por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bank Details Modal -->
+    <div id="bankModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-darkCard border border-darkBorder rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-6">
+            <div class="flex items-center justify-between">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-building-columns text-emerald-400"></i> Datos Bancarios
+                </h3>
+                <button onclick="closeBankDetailsModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-2.5 bg-slate-950 p-4 rounded-2xl border border-darkBorder text-sm">
+                <p><strong>Banco:</strong> <span id="publicBankName" class="text-slate-200">Nubank</span></p>
+                <div class="flex items-center justify-between gap-2">
+                    <p><strong>CLABE:</strong> <span id="publicBankClabe" class="font-mono text-emerald-400 select-all">638180000160570982</span></p>
+                    <button type="button" onclick="copyClabe()" title="Copiar CLABE" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 transition flex items-center gap-1">
+                        <i class="fa-regular fa-copy"></i> Copiar
+                    </button>
+                </div>
+                <p><strong>Titular:</strong> <span id="publicBankHolder" class="text-slate-200">Ana Karen García Ballesteros</span></p>
+            </div>
+            <button onclick="closeBankDetailsModal()" class="w-full py-3 rounded-2xl bg-primary hover:bg-primaryHover text-slate-950 font-bold text-xs transition">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Image Lightbox Modal -->
+    <div id="imageLightboxModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden items-center justify-center p-2 sm:p-4 cursor-pointer" onclick="closeImageLightbox()">
+        <div class="relative max-w-5xl w-full max-h-[95vh] flex flex-col items-center cursor-default" onclick="event.stopPropagation()">
+            <button onclick="closeImageLightbox()" class="absolute -top-12 right-0 sm:right-2 text-white/80 hover:text-white text-3xl p-2 transition z-20">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <button id="lbPrevBtn" onclick="lightboxPrev()" class="absolute left-2 sm:-left-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black/90 border border-slate-700 text-white flex items-center justify-center transition shadow-2xl z-20">
+                <i class="fa-solid fa-chevron-left text-base"></i>
+            </button>
+
+            <div class="relative overflow-hidden flex items-center justify-center max-w-full">
+                <img id="lightboxImage" src="" class="max-w-full max-h-[82vh] object-contain rounded-2xl shadow-2xl border border-slate-800 bg-black transition-all duration-200">
+            </div>
+
+            <button id="lbNextBtn" onclick="lightboxNext()" class="absolute right-2 sm:-right-12 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-black/70 hover:bg-black/90 border border-slate-700 text-white flex items-center justify-center transition shadow-2xl z-20">
+                <i class="fa-solid fa-chevron-right text-base"></i>
+            </button>
+
+            <div class="mt-3 flex items-center gap-3">
+                <p id="lightboxCaption" class="text-slate-200 text-sm font-semibold tracking-wide text-center"></p>
+                <span id="lightboxIndexIndicator" class="text-xs bg-slate-800 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-slate-700"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase & Public Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, doc, updateDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const STORE_ID = 'bazar-los-pandas-v1';
+        const LOCAL_PROD_KEY = 'bazar_pandas_products_v1';
+        const LOCAL_CAT_KEY = 'bazar_pandas_categories_v1';
+        const LOCAL_SETTINGS_KEY = 'bazar_pandas_settings_v1';
+
+        const DEFAULT_SETTINGS = {
+            whatsapp: '5537354414',
+            bankName: 'Nubank',
+            bankClabe: '638180000160570982',
+            bankHolder: 'Ana Karen García Ballesteros'
+        };
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBrggadUfxvXX2CUeuOH7-4yz44jMKi7HY",
+            authDomain: "bazar-san-francisco.firebaseapp.com",
+            projectId: "bazar-san-francisco",
+            storageBucket: "bazar-san-francisco.firebasestorage.app",
+            messagingSenderId: "533232515128",
+            appId: "1:533232515128:web:910d488b5bf0d7e0d28ecd"
+        };
+
+        let db, auth;
+        let categoriesData = loadLocalCategories();
+        let productsData = loadLocalProducts();
+        let storeSettings = loadLocalSettings();
+        let cartItems = [];
+        let selectedCategoryFilter = "Todas";
+        let selectedSubcategoryFilter = "Todas";
+        let currentLightboxImages = [];
+        let currentLightboxIndex = 0;
+        let currentLightboxTitle = "";
+        const syncChannel = new BroadcastChannel('bazar_los_pandas_sync');
+
+        function normalizePhone(raw) {
+            const digits = String(raw || '').replace(/\D/g, '');
+            if (digits.length === 12 && digits.startsWith('52')) return digits.slice(2);
+            if (digits.length === 13 && digits.startsWith('521')) return digits.slice(3);
+            return digits || DEFAULT_SETTINGS.whatsapp;
+        }
+
+        function formatPhoneDisplay(digits) {
+            const clean = normalizePhone(digits);
+            if (clean.length === 10) {
+                return `${clean.slice(0, 2)} ${clean.slice(2, 6)} ${clean.slice(6)}`;
+            }
+            return clean;
+        }
+
+        function loadLocalSettings() {
+            try {
+                const raw = localStorage.getItem(LOCAL_SETTINGS_KEY);
+                if (!raw) return { ...DEFAULT_SETTINGS };
+                const parsed = JSON.parse(raw);
+                return {
+                    whatsapp: normalizePhone(parsed.whatsapp || DEFAULT_SETTINGS.whatsapp),
+                    bankName: parsed.bankName || DEFAULT_SETTINGS.bankName,
+                    bankClabe: parsed.bankClabe || DEFAULT_SETTINGS.bankClabe,
+                    bankHolder: parsed.bankHolder || DEFAULT_SETTINGS.bankHolder
+                };
+            } catch (e) {
+                return { ...DEFAULT_SETTINGS };
+            }
+        }
+
+        function saveLocalSettings(newSettings) {
+            storeSettings = {
+                whatsapp: normalizePhone(newSettings.whatsapp || storeSettings.whatsapp),
+                bankName: (newSettings.bankName || storeSettings.bankName).trim(),
+                bankClabe: (newSettings.bankClabe || storeSettings.bankClabe).trim(),
+                bankHolder: (newSettings.bankHolder || storeSettings.bankHolder).trim()
+            };
+            try {
+                localStorage.setItem(LOCAL_SETTINGS_KEY, JSON.stringify(storeSettings));
+            } catch (e) {
+                console.warn("Local storage settings error:", e);
+            }
+            applySettingsUI();
+        }
+
+        function applySettingsUI() {
+            const cleanWa = normalizePhone(storeSettings.whatsapp);
+            const displayEl = document.getElementById('publicWhatsappDisplay');
+            const linkEl = document.getElementById('publicWhatsappLink');
+            if (displayEl) displayEl.textContent = formatPhoneDisplay(cleanWa);
+            if (linkEl) {
+                linkEl.href = `https://wa.me/52${cleanWa}?text=${encodeURIComponent('Hola, tengo una consulta sobre la merch de Bazar Los Pandas')}`;
+            }
+
+            const bankNameEl = document.getElementById('publicBankName');
+            const bankClabeEl = document.getElementById('publicBankClabe');
+            const bankHolderEl = document.getElementById('publicBankHolder');
+            if (bankNameEl) bankNameEl.textContent = storeSettings.bankName;
+            if (bankClabeEl) bankClabeEl.textContent = storeSettings.bankClabe;
+            if (bankHolderEl) bankHolderEl.textContent = storeSettings.bankHolder;
+        }
+
+        window.copyClabe = function() {
+            navigator.clipboard.writeText(storeSettings.bankClabe).then(() => {
+                showToast("CLABE Copiada", "Lista para pegar en tu app bancaria", "success");
+            }).catch(() => {
+                showToast("CLABE", storeSettings.bankClabe, "success");
+            });
+        };
+
+        function loadLocalProducts() {
+            try {
+                const raw = localStorage.getItem(LOCAL_PROD_KEY);
+                return raw ? JSON.parse(raw) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveLocalProducts(list) {
+            try {
+                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list));
+            } catch (e) {
+                console.warn("Local storage quota notice:", e);
+            }
+        }
+
+        function loadLocalCategories() {
+            const defaults = {
+                "Playeras y Sudaderas": ["Playeras", "Hoodies", "Manga Larga", "Edición Especial"],
+                "Termos y Vasos": ["Termos", "Vasos Conmemorativos", "Tazas", "Cilindros"],
+                "Bolsas y Accesorios": ["Bolsas de Tela (Tote Bags)", "Gorras", "Pines y Llaveros", "Pósters y Pulseras"]
+            };
+            try {
+                const raw = localStorage.getItem(LOCAL_CAT_KEY);
+                return raw ? JSON.parse(raw) : defaults;
+            } catch (e) {
+                return defaults;
+            }
+        }
+
+        function saveLocalCategories(cats) {
+            try {
+                localStorage.setItem(LOCAL_CAT_KEY, JSON.stringify(cats));
+            } catch (e) {
+                console.warn("Local storage cat error:", e);
+            }
+        }
+
+        syncChannel.onmessage = (event) => {
+            if (event.data.type === 'SYNC_ALL' || event.data.type === 'SYNC_PRODUCTS') {
+                if (event.data.products) productsData = event.data.products;
+                if (event.data.payload) productsData = event.data.payload;
+                if (event.data.categories) {
+                    categoriesData = event.data.categories;
+                    saveLocalCategories(categoriesData);
+                    renderCategoryFilters();
+                }
+                if (event.data.settings) {
+                    saveLocalSettings(event.data.settings);
+                }
+                saveLocalProducts(productsData);
+                renderCatalog();
+            } else if (event.data.type === 'SYNC_CATEGORIES') {
+                categoriesData = event.data.payload;
+                saveLocalCategories(categoriesData);
+                renderCategoryFilters();
+                renderCatalog();
+            } else if (event.data.type === 'SYNC_SETTINGS') {
+                if (event.data.settings) saveLocalSettings(event.data.settings);
+            }
+        };
+
+        window.addEventListener('storage', (e) => {
+            if (e.key === LOCAL_PROD_KEY) {
+                productsData = loadLocalProducts();
+                renderCatalog();
+            } else if (e.key === LOCAL_CAT_KEY) {
+                categoriesData = loadLocalCategories();
+                renderCategoryFilters();
+                renderCatalog();
+            } else if (e.key === LOCAL_SETTINGS_KEY) {
+                storeSettings = loadLocalSettings();
+                applySettingsUI();
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            productsData = loadLocalProducts();
+            categoriesData = loadLocalCategories();
+            storeSettings = loadLocalSettings();
+            applySettingsUI();
+            renderCategoryFilters();
+            renderCatalog();
+            syncChannel.postMessage({ type: 'REQUEST_SYNC' });
+
+            try {
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+                try {
+                    await signInAnonymously(auth);
+                } catch (authErr) {
+                    console.warn("Anonymous auth notice:", authErr);
+                }
+
+                const prodRef = collection(db, 'artifacts', STORE_ID, 'public', 'data', 'products');
+                onSnapshot(prodRef, snap => {
+                    const cloudProducts = [];
+                    snap.forEach(d => cloudProducts.push({ id: d.id, ...d.data() }));
+
+                    const mergedMap = new Map();
+                    productsData.forEach(p => mergedMap.set(p.id, p));
+                    cloudProducts.forEach(p => {
+                        const localItem = mergedMap.get(p.id);
+                        if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
+                            mergedMap.set(p.id, p);
+                        }
+                    });
+                    productsData = Array.from(mergedMap.values());
+                    saveLocalProducts(productsData);
+                    renderCatalog();
+                }, (err) => console.warn("Catalog fetch notice:", err));
+
+                const catRef = doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'categories');
+                onSnapshot(catRef, docSnap => {
+                    if (docSnap.exists() && docSnap.data().categories) {
+                        categoriesData = docSnap.data().categories;
+                        saveLocalCategories(categoriesData);
+                    }
+                    renderCategoryFilters();
+                }, (err) => console.warn("Category fetch notice:", err));
+
+                const settingsRef = doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'settings');
+                onSnapshot(settingsRef, docSnap => {
+                    if (docSnap.exists()) {
+                        saveLocalSettings(docSnap.data());
+                    }
+                }, (err) => console.warn("Settings fetch notice:", err));
+            } catch (err) {
+                console.warn("Offline mode");
+            }
+        });
+
+        window.switchTab = function(tabId) {
+            ['catalog', 'payments'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`nav-${t}`).className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-white";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`nav-${tabId}`).className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-primary text-slate-950 shadow-md";
+        };
+
+        function renderCategoryFilters() {
+            const container = document.getElementById('categoryFilters');
+            if (!container) return;
+            let html = `<button onclick="selectCategory('Todas')" class="category-filter-btn px-4 py-2 rounded-xl text-xs font-bold ${selectedCategoryFilter === 'Todas' ? 'bg-primary text-slate-950 shadow-md' : 'bg-slate-900 text-slate-300 border border-darkBorder'} transition whitespace-nowrap">Todas</button>`;
+            Object.keys(categoriesData).forEach(cat => {
+                html += `<button onclick="selectCategory('${cat}')" class="category-filter-btn px-4 py-2 rounded-xl text-xs font-bold ${selectedCategoryFilter === cat ? 'bg-primary text-slate-950 shadow-md' : 'bg-slate-900 text-slate-300 border border-darkBorder'} transition whitespace-nowrap">${cat}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.selectCategory = function(cat) {
+            selectedCategoryFilter = cat;
+            selectedSubcategoryFilter = 'Todas';
+            const subContainer = document.getElementById('subcategoryFiltersContainer');
+            if (cat !== 'Todas' && categoriesData[cat] && categoriesData[cat].length > 0) {
+                subContainer.classList.remove('hidden');
+                renderSubcategoryFilters();
+            } else {
+                subContainer.classList.add('hidden');
+            }
+            renderCategoryFilters();
+            renderCatalog();
+        };
+
+        function renderSubcategoryFilters() {
+            const container = document.getElementById('subcategoryFilters');
+            if (!container) return;
+            let html = `<button onclick="selectSubcategory('Todas')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${selectedSubcategoryFilter === 'Todas' ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-900 text-slate-400'} whitespace-nowrap">Todas</button>`;
+            categoriesData[selectedCategoryFilter].forEach(sub => {
+                html += `<button onclick="selectSubcategory('${sub}')" class="px-3 py-1.5 rounded-lg text-xs font-semibold ${selectedSubcategoryFilter === sub ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-slate-900 text-slate-400'} whitespace-nowrap">${sub}</button>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.selectSubcategory = function(sub) {
+            selectedSubcategoryFilter = sub;
+            renderSubcategoryFilters();
+            renderCatalog();
+        };
+
+        window.filterProducts = function() {
+            renderCatalog();
+        };
+
+        // Slider Controls
+        window.goToSlide = function(safeId, index) {
+            const slider = document.getElementById(`slider-${safeId}`);
+            if (!slider) return;
+            const total = parseInt(slider.getAttribute('data-total-slides') || '1', 10);
+            const targetIdx = (index + total) % total;
+            slider.style.transform = `translateX(-${targetIdx * 100}%)`;
+            slider.setAttribute('data-current-index', targetIdx);
+
+            const counter = document.getElementById(`counter-${safeId}`);
+            if (counter) counter.textContent = `${targetIdx + 1}/${total}`;
+
+            for (let i = 0; i < total; i++) {
+                const dot = document.getElementById(`dot-${safeId}-${i}`);
+                if (dot) {
+                    dot.className = `w-2 h-2 rounded-full transition-all duration-200 ${i === targetIdx ? 'bg-emerald-400 w-4' : 'bg-white/40'}`;
+                }
+            }
+        };
+
+        window.nextSlide = function(safeId) {
+            const slider = document.getElementById(`slider-${safeId}`);
+            if (!slider) return;
+            const current = parseInt(slider.getAttribute('data-current-index') || '0', 10);
+            goToSlide(safeId, current + 1);
+        };
+
+        window.prevSlide = function(safeId) {
+            const slider = document.getElementById(`slider-${safeId}`);
+            if (!slider) return;
+            const current = parseInt(slider.getAttribute('data-current-index') || '0', 10);
+            goToSlide(safeId, current - 1);
+        };
+
+        window.renderCatalog = function() {
+            const grid = document.getElementById('productsGrid');
+            const emptyState = document.getElementById('emptyCatalogState');
+            const searchEl = document.getElementById('searchInput');
+            const query = searchEl ? searchEl.value.toLowerCase() : '';
+
+            const available = productsData.filter(p => p.status === 'Disponible');
+            const filtered = available.filter(p => {
+                const matchSearch = (p.name && p.name.toLowerCase().includes(query)) ||
+                                    (p.description && p.description.toLowerCase().includes(query)) ||
+                                    (p.eventName && p.eventName.toLowerCase().includes(query));
+                const matchCat = selectedCategoryFilter === 'Todas' || p.category === selectedCategoryFilter;
+                const matchSub = selectedSubcategoryFilter === 'Todas' || p.subcategory === selectedSubcategoryFilter;
+                return matchSearch && matchCat && matchSub;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            let html = '';
+            filtered.forEach(p => {
+                const images = (p.images && Array.isArray(p.images) && p.images.length > 0)
+                    ? p.images
+                    : (p.imageUrl ? [p.imageUrl] : []);
+                const hasPhotos = images.length > 0;
+                const safeId = p.id.replace(/[^a-zA-Z0-9_-]/g, '_');
+
+                let galleryHtml = '';
+                if (!hasPhotos) {
+                    galleryHtml = `
+                        <div class="h-64 bg-slate-950 flex flex-col items-center justify-center text-slate-500">
+                            <span class="text-3xl mb-2">🐼</span>
+                            <span class="text-xs font-medium">Foto próximamente</span>
+                        </div>
+                    `;
+                } else if (images.length === 1) {
+                    galleryHtml = `
+                        <div class="relative h-64 overflow-hidden bg-slate-950 cursor-pointer group" onclick="openProductGalleryFullscreen('${safeId}', 0)">
+                            <img src="${images[0]}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400/131A29/94A3B8?text=Sin+Foto'">
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-sm font-semibold gap-2 transition duration-200">
+                                <i class="fa-solid fa-expand"></i> Ver pantalla completa
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const slidesHtml = images.map((img, i) => `
+                        <div class="min-w-full h-64 shrink-0 cursor-pointer relative group/slide" onclick="openProductGalleryFullscreen('${safeId}', ${i})">
+                            <img src="${img}" alt="${p.name} - ${i+1}" class="w-full h-full object-cover hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/600x400/131A29/94A3B8?text=Sin+Foto'">
+                            <div class="absolute inset-0 bg-black/30 opacity-0 group-hover/slide:opacity-100 flex items-center justify-center text-white text-xs font-semibold gap-1.5 transition duration-200 pointer-events-none">
+                                <i class="fa-solid fa-expand"></i> Pantalla completa
+                            </div>
+                        </div>
+                    `).join('');
+
+                    const dotsHtml = images.map((_, i) => `
+                        <button type="button" onclick="goToSlide('${safeId}', ${i})" id="dot-${safeId}-${i}" class="w-2 h-2 rounded-full transition-all duration-200 ${i === 0 ? 'bg-emerald-400 w-4' : 'bg-white/40'}"></button>
+                    `).join('');
+
+                    galleryHtml = `
+                        <div class="relative h-64 overflow-hidden bg-slate-950 group">
+                            <div id="slider-${safeId}" class="flex h-full transition-transform duration-300 ease-out" data-current-index="0" data-total-slides="${images.length}">
+                                ${slidesHtml}
+                            </div>
+                            <button onclick="prevSlide('${safeId}')" class="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/65 hover:bg-black/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg z-10">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
+                            </button>
+                            <button onclick="nextSlide('${safeId}')" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/65 hover:bg-black/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg z-10">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
+                            </button>
+                            <button onclick="openCurrentSlideFullscreen('${safeId}')" title="Ver foto actual en grande" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/75 hover:bg-black/95 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg z-20">
+                                <i class="fa-solid fa-expand text-xs"></i>
+                            </button>
+                            <span class="absolute bottom-3 right-3 px-2 py-0.5 rounded-md bg-black/75 text-slate-200 text-[11px] font-semibold flex items-center gap-1 z-10">
+                                <i class="fa-solid fa-images text-[10px]"></i> <span id="counter-${safeId}">1/${images.length}</span>
+                            </span>
+                            <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-10">
+                                ${dotsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                html += `
+                    <div class="bg-darkCard border border-darkBorder rounded-3xl overflow-hidden shadow-xl hover:border-emerald-500/60 transition flex flex-col justify-between">
+                        <div>
+                            <div class="relative">
+                                ${galleryHtml}
+                                <div class="absolute top-3 left-3 flex flex-wrap gap-1.5 z-20 pointer-events-none">
+                                    <span class="px-2.5 py-1 rounded-full bg-slate-950/85 text-slate-200 text-[11px] font-semibold backdrop-blur-sm border border-slate-700/60">${p.subcategory}</span>
+                                    ${p.eventName ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/90 text-slate-950 text-[11px] font-bold backdrop-blur-sm"><i class="fa-solid fa-location-dot mr-1"></i>${p.eventName}</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="p-5 space-y-2">
+                                <p class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">${p.category}</p>
+                                <h3 class="font-bold text-lg text-white leading-snug">${p.name}</h3>
+                                <p class="text-xs text-slate-400 line-clamp-2">${p.description || 'Mercancía conmemorativa de evento en CDMX.'}</p>
+                            </div>
+                        </div>
+                        <div class="p-5 pt-0 flex items-center justify-between">
+                            <span class="text-xl font-extrabold text-white">$${Number(p.price).toFixed(2)}</span>
+                            <button onclick="addToCart('${p.id}')" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-extrabold text-slate-950 shadow-md flex items-center gap-1.5 transition">
+                                <i class="fa-solid fa-clock"></i> Apartar
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            grid.innerHTML = html;
+        };
+
+        window.openProductGalleryFullscreen = function(safeId, startIndex = 0) {
+            const p = productsData.find(item => item.id.replace(/[^a-zA-Z0-9_-]/g, '_') === safeId);
+            if (!p) return;
+            const images = (p.images && p.images.length > 0) ? p.images : (p.imageUrl ? [p.imageUrl] : []);
+            if (images.length === 0) return;
+
+            currentLightboxImages = images;
+            currentLightboxIndex = startIndex;
+            currentLightboxTitle = p.name;
+            updateLightboxView();
+
+            const modal = document.getElementById('imageLightboxModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+
+        window.openCurrentSlideFullscreen = function(safeId) {
+            const slider = document.getElementById(`slider-${safeId}`);
+            const idx = slider ? parseInt(slider.getAttribute('data-current-index') || '0', 10) : 0;
+            openProductGalleryFullscreen(safeId, idx);
+        };
+
+        window.lightboxNext = function() {
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex + 1) % currentLightboxImages.length;
+            updateLightboxView();
+        };
+
+        window.lightboxPrev = function() {
+            if (currentLightboxImages.length <= 1) return;
+            currentLightboxIndex = (currentLightboxIndex - 1 + currentLightboxImages.length) % currentLightboxImages.length;
+            updateLightboxView();
+        };
+
+        function updateLightboxView() {
+            const img = document.getElementById('lightboxImage');
+            const caption = document.getElementById('lightboxCaption');
+            const indicator = document.getElementById('lightboxIndexIndicator');
+            const prevBtn = document.getElementById('lbPrevBtn');
+            const nextBtn = document.getElementById('lbNextBtn');
+
+            img.src = currentLightboxImages[currentLightboxIndex];
+            caption.textContent = currentLightboxTitle;
+
+            if (currentLightboxImages.length > 1) {
+                indicator.textContent = `${currentLightboxIndex + 1} / ${currentLightboxImages.length}`;
+                indicator.classList.remove('hidden');
+                prevBtn.classList.remove('hidden');
+                nextBtn.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+                prevBtn.classList.add('hidden');
+                nextBtn.classList.add('hidden');
+            }
+        }
+
+        window.closeImageLightbox = function() {
+            const modal = document.getElementById('imageLightboxModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.addEventListener('keydown', (e) => {
+            const modal = document.getElementById('imageLightboxModal');
+            if (modal && !modal.classList.contains('hidden')) {
+                if (e.key === 'Escape') closeImageLightbox();
+                if (e.key === 'ArrowRight') lightboxNext();
+                if (e.key === 'ArrowLeft') lightboxPrev();
+            }
+        });
+
+        window.addToCart = async function(id) {
+            const p = productsData.find(item => item.id === id);
+            if (!p) return;
+
+            p.status = 'Apartado';
+            p.updatedAt = Date.now();
+            saveLocalProducts(productsData);
+            renderCatalog();
+            syncChannel.postMessage({ type: 'SYNC_ALL', products: productsData, categories: categoriesData, settings: storeSettings });
+
+            try {
+                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: 'Apartado', updatedAt: p.updatedAt });
+            } catch (err) {
+                console.warn("Apartado update error:", err);
+            }
+
+            const existing = cartItems.find(item => item.id === id);
+            if (!existing) cartItems.push({ ...p, qty: 1 });
+            else existing.qty += 1;
+
+            updateCartBadge();
+            showToast("Apartado", `"${p.name}" apartado temporalmente`, "success");
+        };
+
+        window.removeFromCart = async function(id) {
+            cartItems = cartItems.filter(item => item.id !== id);
+            const p = productsData.find(item => item.id === id);
+            if (p) {
+                p.status = 'Disponible';
+                p.updatedAt = Date.now();
+            }
+            saveLocalProducts(productsData);
+            updateCartBadge();
+            renderCartModal();
+            renderCatalog();
+            syncChannel.postMessage({ type: 'SYNC_ALL', products: productsData, categories: categoriesData, settings: storeSettings });
+            try {
+                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: 'Disponible', updatedAt: Date.now() });
+            } catch (err) {
+                console.warn("Restore status error:", err);
+            }
+        };
+
+        function updateCartBadge() {
+            const badge = document.getElementById('cartBadge');
+            const total = cartItems.reduce((acc, item) => acc + item.qty, 0);
+            if (total > 0) {
+                badge.textContent = total;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        window.openCartModal = function() {
+            renderCartModal();
+            document.getElementById('cartModal').classList.remove('hidden');
+            document.getElementById('cartModal').classList.add('flex');
+        };
+        window.closeCartModal = function() {
+            document.getElementById('cartModal').classList.add('hidden');
+            document.getElementById('cartModal').classList.remove('flex');
+        };
+
+        function renderCartModal() {
+            const list = document.getElementById('cartItemsList');
+            const emptyState = document.getElementById('cartEmptyState');
+            const totalSpan = document.getElementById('cartTotalPrice');
+            const orderBtn = document.getElementById('whatsappOrderBtn');
+            if (cartItems.length === 0) {
+                list.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                totalSpan.textContent = '$0.00';
+                orderBtn.setAttribute('disabled', 'true');
+                return;
+            }
+            emptyState.classList.add('hidden');
+            orderBtn.removeAttribute('disabled');
+
+            let html = '';
+            let total = 0;
+            cartItems.forEach(item => {
+                const sub = item.price * item.qty;
+                total += sub;
+                const images = (item.images && item.images.length > 0) ? item.images : (item.imageUrl ? [item.imageUrl] : []);
+                const thumb = images.length > 0 ? images[0] : 'https://placehold.co/100x100/131A29/94A3B8?text=Merch';
+                html += `
+                    <div class="py-3 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${thumb}" class="w-12 h-12 rounded-xl object-cover">
+                            <div>
+                                <h4 class="font-semibold text-white text-sm">${item.name}</h4>
+                                <p class="text-xs text-slate-400">$${Number(item.price).toFixed(2)} x ${item.qty}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-emerald-400 text-sm">$${sub.toFixed(2)}</span>
+                            <button onclick="removeFromCart('${item.id}')" class="text-rose-400 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+            totalSpan.textContent = `$${total.toFixed(2)}`;
+        }
+
+        window.sendWhatsAppApartado = function() {
+            if (cartItems.length === 0) return;
+            const cleanWa = normalizePhone(storeSettings.whatsapp);
+            const whatsappNumber = `52${cleanWa}`;
+            let msg = "¡Hola! 🐼 He apartado la siguiente merch de conciertos en *Bazar Los Pandas*:\n\n";
+            let total = 0;
+            cartItems.forEach((item, i) => {
+                const sub = item.price * item.qty;
+                total += sub;
+                msg += `${i + 1}. *${item.name}* (${item.subcategory}) - *$${sub.toFixed(2)}*\n`;
+            });
+            msg += `\n*Total:* *$${total.toFixed(2)}*\n\nQuiero coordinar mi pago (Tarjeta / Transferencia / Efectivo) y entrega en CDMX. ¡Gracias!`;
+            window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        window.openBankDetailsModal = () => {
+            applySettingsUI();
+            const modal = document.getElementById('bankModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        };
+        window.closeBankDetailsModal = () => {
+            const modal = document.getElementById('bankModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        };
+
+        window.showToast = function(title, msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastTitle').textContent = title;
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0'), 3500);
+        };
+    </script>
+</body>
+</html>
