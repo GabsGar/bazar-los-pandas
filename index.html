@@ -107,7 +107,7 @@
                 <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
                     <div class="relative w-full md:w-96">
                         <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar artista, termo, playera, bolsa..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition">
+                        <input type="text" id="searchInput" oninput="filterProducts()" placeholder="Buscar evento, termo, playera, bolsa..." class="w-full bg-slate-950 border border-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition">
                     </div>
 
                     <div id="categoryFilters" class="flex items-center gap-2 overflow-x-auto w-full pb-2 md:pb-0 no-scrollbar">
@@ -385,6 +385,105 @@
             }
         }
 
+        function seedSampleMerchIfEmpty() {
+            if (Array.isArray(productsData) && productsData.length > 0) return;
+
+            const makePlaceholder = (label, bg = '131A29', fg = '10B981') =>
+                `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                    <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+                        <rect width="600" height="600" fill="#${bg}"/>
+                        <circle cx="300" cy="230" r="85" fill="#ffffff" opacity="0.1"/>
+                        <text x="300" y="250" text-anchor="middle" font-size="72">🐼</text>
+                        <text x="300" y="345" text-anchor="middle" fill="#${fg}" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="700">${label}</text>
+                        <text x="300" y="385" text-anchor="middle" fill="#94a3b8" font-family="Inter, Arial, sans-serif" font-size="18">Bazar Los Pandas • CDMX</text>
+                    </svg>
+                `)}`;
+
+            const now = Date.now();
+            productsData = [
+                {
+                    id: 'sample-playera-cdmx',
+                    name: 'Playera Gira CDMX — Negro',
+                    eventName: 'Estadio GNP CDMX',
+                    price: 380,
+                    status: 'Disponible',
+                    category: 'Playeras y Sudaderas',
+                    subcategory: 'Playeras',
+                    description: 'Talla L, algodón 100%, impresión frontal y fechas de concierto pasado en CDMX.',
+                    images: [makePlaceholder('Playera Gira CDMX'), makePlaceholder('Detalle Estampado', '0f172a', 'f59e0b')],
+                    imageUrl: makePlaceholder('Playera Gira CDMX'),
+                    updatedAt: now - 60000
+                },
+                {
+                    id: 'sample-termo-panda',
+                    name: 'Termo Acero Inoxidable 1L — Panda',
+                    eventName: 'Palacio de los Deportes',
+                    price: 450,
+                    status: 'Disponible',
+                    category: 'Termos y Vasos',
+                    subcategory: 'Termos',
+                    description: 'Doble pared térmica, tapa antiderrame y grabado conmemorativo de evento en CDMX.',
+                    images: [makePlaceholder('Termo Acero 1L')],
+                    imageUrl: makePlaceholder('Termo Acero 1L'),
+                    updatedAt: now - 50000
+                },
+                {
+                    id: 'sample-tote-festival',
+                    name: 'Bolsa de Tela (Tote Bag) — Festival',
+                    eventName: 'Vive Latino CDMX',
+                    price: 190,
+                    status: 'Disponible',
+                    category: 'Bolsas y Accesorios',
+                    subcategory: 'Bolsas de Tela (Tote Bags)',
+                    description: 'Lona gruesa resistente con asas reforzadas, ideal para el día a día o conciertos.',
+                    images: [makePlaceholder('Tote Bag Festival')],
+                    imageUrl: makePlaceholder('Tote Bag Festival'),
+                    updatedAt: now - 40000
+                },
+                {
+                    id: 'sample-hoodie-apartado',
+                    name: 'Hoodie Edición Especial — CDMX',
+                    eventName: 'Parque Naucalli',
+                    price: 620,
+                    status: 'Apartado',
+                    category: 'Playeras y Sudaderas',
+                    subcategory: 'Hoodies',
+                    description: 'Talla M, felpa interior suave. Marcada como Apartado para probar validación de pago en Admin.',
+                    images: [makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399')],
+                    imageUrl: makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399'),
+                    updatedAt: now - 30000
+                },
+                {
+                    id: 'sample-vaso-conmemorativo',
+                    name: 'Vaso Conmemorativo con Popote',
+                    eventName: 'Auditorio Nacional',
+                    price: 160,
+                    status: 'Disponible',
+                    category: 'Termos y Vasos',
+                    subcategory: 'Vasos Conmemorativos',
+                    description: 'Recuerdo de evento en la CDMX en excelente estado, listo para entrega.',
+                    images: [makePlaceholder('Vaso Conmemorativo')],
+                    imageUrl: makePlaceholder('Vaso Conmemorativo'),
+                    updatedAt: now - 20000
+                },
+                {
+                    id: 'sample-gorra-pines',
+                    name: 'Gorra Snapback + Pin Metálico',
+                    eventName: 'Evento Especial CDMX',
+                    price: 320,
+                    status: 'Disponible',
+                    category: 'Bolsas y Accesorios',
+                    subcategory: 'Gorras',
+                    description: 'Gorra bordada acompañada de pin coleccionable del evento.',
+                    images: [makePlaceholder('Gorra + Pin')],
+                    imageUrl: makePlaceholder('Gorra + Pin'),
+                    updatedAt: now - 10000
+                }
+            ];
+
+            saveLocalProducts(productsData);
+        }
+
         function loadLocalCategories() {
             const defaults = {
                 "Playeras y Sudaderas": ["Playeras", "Hoodies", "Manga Larga", "Edición Especial"],
@@ -447,6 +546,7 @@
 
         window.addEventListener('DOMContentLoaded', async () => {
             productsData = loadLocalProducts();
+            seedSampleMerchIfEmpty();
             categoriesData = loadLocalCategories();
             storeSettings = loadLocalSettings();
             applySettingsUI();
@@ -469,16 +569,18 @@
                     const cloudProducts = [];
                     snap.forEach(d => cloudProducts.push({ id: d.id, ...d.data() }));
 
-                    const mergedMap = new Map();
-                    productsData.forEach(p => mergedMap.set(p.id, p));
-                    cloudProducts.forEach(p => {
-                        const localItem = mergedMap.get(p.id);
-                        if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
-                            mergedMap.set(p.id, p);
-                        }
-                    });
-                    productsData = Array.from(mergedMap.values());
-                    saveLocalProducts(productsData);
+                    if (cloudProducts.length > 0) {
+                        const mergedMap = new Map();
+                        productsData.forEach(p => mergedMap.set(p.id, p));
+                        cloudProducts.forEach(p => {
+                            const localItem = mergedMap.get(p.id);
+                            if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
+                                mergedMap.set(p.id, p);
+                            }
+                        });
+                        productsData = Array.from(mergedMap.values());
+                        saveLocalProducts(productsData);
+                    }
                     renderCatalog();
                 }, (err) => console.warn("Catalog fetch notice:", err));
 
@@ -555,7 +657,6 @@
             renderCatalog();
         };
 
-        // Slider Controls
         window.goToSlide = function(safeId, index) {
             const slider = document.getElementById(`slider-${safeId}`);
             if (!slider) return;
