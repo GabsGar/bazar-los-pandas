@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bazar Los Pandas - Merch de Conciertos y Eventos CDMX</title>
+    <title>Bazar Los Pandas - Merch de Conciertos y Personalización CDMX</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -47,28 +47,31 @@
 
     <!-- Header / Navbar -->
     <header class="sticky top-0 z-40 bg-darkCard/85 backdrop-blur-md border-b border-darkBorder">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-2">
             <div class="flex items-center gap-3">
-                <div class="w-12 h-12 rounded-2xl bg-white text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/20 border-2 border-emerald-400 text-2xl select-none">
+                <div class="w-12 h-12 rounded-2xl bg-white text-slate-950 flex items-center justify-center shadow-lg shadow-emerald-500/20 border-2 border-emerald-400 text-2xl select-none shrink-0">
                     🐼
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-400 bg-clip-text text-transparent">Bazar Los Pandas</h1>
-                    <p class="text-[11px] text-slate-400 hidden sm:block">Merch Oficial & Recuerdos de Conciertos CDMX</p>
+                    <h1 class="text-lg sm:text-xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-emerald-400 bg-clip-text text-transparent">Bazar Los Pandas</h1>
+                    <p class="text-[11px] text-slate-400 hidden sm:block">Merch Oficial & Personalización CDMX</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <nav class="flex items-center bg-slate-950/70 p-1.5 rounded-2xl border border-darkBorder">
-                    <button onclick="switchTab('catalog')" id="nav-catalog" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-primary text-slate-950 shadow-md">
+            <div class="flex items-center gap-2 sm:gap-3">
+                <nav class="flex items-center bg-slate-950/70 p-1.5 rounded-2xl border border-darkBorder overflow-x-auto no-scrollbar">
+                    <button onclick="switchTab('catalog')" id="nav-catalog" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 bg-primary text-slate-950 shadow-md whitespace-nowrap">
                         <i class="fa-solid fa-ticket"></i> Catálogo
                     </button>
-                    <button onclick="switchTab('payments')" id="nav-payments" class="px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-white">
-                        <i class="fa-solid fa-wallet"></i> Info de pagos
+                    <button onclick="switchTab('custom')" id="nav-custom" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-white whitespace-nowrap">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i> Personalizar
+                    </button>
+                    <button onclick="switchTab('payments')" id="nav-payments" class="px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-white whitespace-nowrap">
+                        <i class="fa-solid fa-wallet"></i> <span class="hidden sm:inline">Info de pagos</span><span class="sm:hidden">Pagos</span>
                     </button>
                 </nav>
 
-                <button onclick="openCartModal()" class="relative p-3 rounded-2xl bg-slate-900 border border-darkBorder hover:border-emerald-500/60 hover:bg-slate-800 transition text-slate-200">
+                <button onclick="openCartModal()" class="relative p-3 rounded-2xl bg-slate-900 border border-darkBorder hover:border-emerald-500/60 hover:bg-slate-800 transition text-slate-200 shrink-0">
                     <i class="fa-solid fa-bag-shopping text-lg text-emerald-400"></i>
                     <span id="cartBadge" class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-xs flex items-center justify-center hidden">0</span>
                 </button>
@@ -88,12 +91,12 @@
                         <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold uppercase tracking-wider border border-emerald-500/30">
                             <i class="fa-solid fa-music mr-1"></i> Conciertos & Festivales CDMX
                         </span>
-                        <span class="px-3 py-1 rounded-full bg-amber-500/15 text-amber-300 text-xs font-semibold uppercase tracking-wider border border-amber-500/30">
-                            Piezas Únicas
-                        </span>
+                        <button onclick="switchTab('custom')" class="px-3 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-500/40 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> ¡Crea tu diseño personalizado!
+                        </button>
                     </div>
                     <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white">Llévate el recuerdo de tus conciertos favoritos</h2>
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Termos conmemorativos, playeras, bolsas de tela (tote bags), vasos y artículos de eventos que ya pasaron en la CDMX. Aparta tus piezas al instante antes de que se agoten.</p>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed">Termos conmemorativos, playeras, bolsas de tela (tote bags), vasos y artículos de eventos que ya pasaron en la CDMX. Revisa las piezas sobrantes o diseña el tuyo en la sección <strong>Personalizar</strong>.</p>
                 </div>
                 <div class="hidden lg:flex flex-col items-center justify-center bg-slate-950/60 border border-darkBorder rounded-3xl p-5 text-center min-w-[190px]">
                     <span class="text-4xl mb-2">🐼🎸</span>
@@ -129,7 +132,123 @@
                     🐼
                 </div>
                 <h3 class="text-lg font-bold text-white">No hay merch disponible con ese filtro</h3>
-                <p class="text-slate-400 text-sm max-w-sm mx-auto">Prueba con otra categoría o vuelve pronto para ver mercancía de nuevos eventos en CDMX.</p>
+                <p class="text-slate-400 text-sm max-w-sm mx-auto">Prueba con otra categoría o personaliza un artículo desde cero.</p>
+            </div>
+        </section>
+
+        <!-- ================= CUSTOMIZATION TAB ================= -->
+        <section id="tab-custom" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-amber-500/15 via-darkCard to-emerald-950/50 border border-darkBorder rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1.5">
+                    <span class="px-3 py-1 rounded-full bg-amber-400/20 text-amber-300 text-xs font-bold uppercase tracking-wider border border-amber-400/30">
+                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Estudio de Personalización
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Diseña tu propia Merch</h2>
+                    <p class="text-xs sm:text-sm text-slate-300">Elige un artículo base (playera, termo, bolsa de tela, etc.), sube tu imagen o escribe una frase, previsualiza el resultado y pide la cantidad que quieras sin límite de stock.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                <!-- Controls Panel -->
+                <div class="lg:col-span-6 bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">1. Elige el Artículo Base</label>
+                        <div id="customBaseGrid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                    </div>
+
+                    <div class="border-t border-darkBorder pt-4 space-y-4">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">2. Sube tu Imagen o Logo <span class="text-slate-500 font-normal lowercase">(Opcional)</span></label>
+                        <div class="flex items-center gap-3">
+                            <label class="flex-1 cursor-pointer bg-slate-950 border border-dashed border-darkBorder hover:border-emerald-400 rounded-2xl px-4 py-3.5 flex items-center justify-center gap-2 text-xs sm:text-sm text-slate-300 transition">
+                                <i class="fa-solid fa-image text-emerald-400 text-base"></i>
+                                <span id="customImgFileLabel">Seleccionar imagen PNG / JPG</span>
+                                <input type="file" id="customDesignFile" accept="image/*" onchange="handleCustomImageUpload(event)" class="hidden">
+                            </label>
+                            <button type="button" id="clearCustomImgBtn" onclick="clearCustomImage()" class="hidden px-3.5 py-3.5 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 border border-rose-500/30 text-rose-300 text-xs font-semibold transition" title="Quitar imagen">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+
+                        <div id="customImgScaleControl" class="hidden space-y-1.5 bg-slate-950/60 p-3 rounded-xl border border-darkBorder">
+                            <div class="flex justify-between text-[11px] text-slate-400">
+                                <span>Tamaño de imagen en el artículo</span>
+                                <span id="customImgScaleVal" class="font-bold text-emerald-400">42%</span>
+                            </div>
+                            <input type="range" id="customImgScale" min="18" max="75" value="42" oninput="updateCustomPreview()" class="w-full accent-emerald-400">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-darkBorder pt-4 space-y-3">
+                        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider">3. Agrega Texto Personalizado <span class="text-slate-500 font-normal lowercase">(Opcional)</span></label>
+                        <input type="text" id="customTextInput" maxlength="45" oninput="updateCustomPreview()" placeholder="Ej. Mi Nombre • Concierto CDMX 2026" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Color de Texto</label>
+                                <div class="flex items-center gap-2 bg-slate-950 border border-darkBorder rounded-xl px-3 py-2">
+                                    <input type="color" id="customTextColor" value="#FFFFFF" oninput="updateCustomPreview()" class="w-7 h-7 rounded cursor-pointer bg-transparent border-0">
+                                    <span id="customTextColorHex" class="text-xs font-mono text-slate-300">#FFFFFF</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Posición del Diseño</label>
+                                <select id="customPositionSelect" onchange="updateCustomPreview()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-3 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-primary">
+                                    <option value="center">Centro</option>
+                                    <option value="top">Parte Superior / Pecho</option>
+                                    <option value="bottom">Parte Inferior</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-400 mb-1">Notas adicionales (Talla, color de base, detalles)</label>
+                            <input type="text" id="customNotesInput" placeholder="Ej. Talla G, playera negra o termo blanco..." class="w-full bg-slate-950 border border-darkBorder rounded-xl px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-primary transition">
+                        </div>
+                    </div>
+
+                    <div class="border-t border-darkBorder pt-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                        <div>
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">4. Cantidad (Independiente de Stock)</label>
+                            <div class="inline-flex items-center bg-slate-950 border border-darkBorder rounded-xl overflow-hidden">
+                                <button type="button" onclick="changeCustomQty(-1)" class="px-3.5 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white font-bold text-sm transition">-</button>
+                                <input type="number" id="customQtyInput" min="1" max="500" value="1" oninput="updateCustomTotal()" class="w-16 text-center bg-transparent text-sm font-extrabold text-emerald-400 focus:outline-none">
+                                <button type="button" onclick="changeCustomQty(1)" class="px-3.5 py-2.5 text-slate-300 hover:bg-slate-800 hover:text-white font-bold text-sm transition">+</button>
+                            </div>
+                        </div>
+
+                        <div class="text-left sm:text-right">
+                            <p class="text-[11px] text-slate-400">Subtotal Personalizado</p>
+                            <p id="customSubtotalDisplay" class="text-2xl font-extrabold text-emerald-400">$0.00</p>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="addCustomItemToCart()" class="w-full py-3.5 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-extrabold text-sm transition shadow-lg flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bag-shopping"></i> Agregar Personalizado al Apartado
+                    </button>
+                </div>
+
+                <!-- Live Preview Panel -->
+                <div class="lg:col-span-6 bg-darkCard border border-darkBorder rounded-3xl p-6 shadow-xl space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-base text-white flex items-center gap-2">
+                                <i class="fa-solid fa-eye text-emerald-400"></i> Vista Previa en Tiempo Real
+                            </h3>
+                            <p id="previewBaseSubtitle" class="text-xs text-slate-400">Selecciona un artículo para previsualizar</p>
+                        </div>
+                        <button type="button" onclick="downloadCustomPreview()" class="px-3 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 border border-darkBorder text-xs font-semibold text-slate-200 transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-download text-emerald-400"></i> Guardar Vista
+                        </button>
+                    </div>
+
+                    <div class="relative rounded-2xl overflow-hidden bg-slate-950 border border-darkBorder flex items-center justify-center p-4">
+                        <canvas id="customPreviewCanvas" width="600" height="600" class="w-full max-w-[460px] h-auto rounded-xl shadow-2xl"></canvas>
+                    </div>
+
+                    <p class="text-[11px] text-slate-400 text-center">
+                        <i class="fa-solid fa-circle-info text-emerald-400 mr-1"></i> Esta vista previa es una simulación aproximada de impresión/grabado. El pedido personalizado se fabrica sobre pedido y es independiente del stock disponible en catálogo.
+                    </p>
+                </div>
             </div>
         </section>
 
@@ -195,8 +314,8 @@
                 </h3>
                 <button onclick="closeCartModal()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="cartItemsList" class="space-y-3 max-h-60 overflow-y-auto divide-y divide-darkBorder/60"></div>
-            <div id="cartEmptyState" class="text-center py-8 text-slate-400 text-sm">Aún no has apartado artículos de conciertos.</div>
+            <div id="cartItemsList" class="space-y-3 max-h-72 overflow-y-auto divide-y divide-darkBorder/60"></div>
+            <div id="cartEmptyState" class="text-center py-8 text-slate-400 text-sm">Aún no has apartado artículos ni diseños personalizados.</div>
             <div class="border-t border-darkBorder pt-4 space-y-3">
                 <div class="flex justify-between items-center text-sm font-semibold">
                     <span>Total Estimado:</span>
@@ -295,7 +414,38 @@
         let currentLightboxImages = [];
         let currentLightboxIndex = 0;
         let currentLightboxTitle = "";
+
+        // Customization State
+        let selectedCustomBaseId = null;
+        let customUploadedImageObj = null;
+        let customBaseImageObj = null;
+        let customBaseImageSrc = "";
+
         const syncChannel = new BroadcastChannel('bazar_los_pandas_sync');
+
+        function normalizeProductInventory(p) {
+            const stock = Math.max(0, parseInt(p.stock ?? 1, 10) || 0);
+            let reserved = Math.max(0, parseInt(p.reserved ?? 0, 10) || 0);
+            if (p.status === 'Apartado' && reserved === 0 && stock > 0) {
+                reserved = 1;
+            }
+            if (reserved > stock) reserved = stock;
+            const remaining = Math.max(0, stock - reserved);
+            let status = p.status || 'Disponible';
+            if (stock === 0) status = 'Agotado';
+            else if (remaining === 0 && reserved > 0) status = 'Apartado';
+            else if (status === 'Agotado' && stock > 0) status = 'Disponible';
+
+            return {
+                ...p,
+                stock,
+                reserved,
+                remaining,
+                status,
+                customizable: p.customizable !== false, // por defecto habilitado para que cualquier artículo nuevo pueda personalizarse
+                customPrice: p.customPrice !== undefined && p.customPrice !== '' ? Number(p.customPrice) : Number(p.price || 0)
+            };
+        }
 
         function normalizePhone(raw) {
             const digits = String(raw || '').replace(/\D/g, '');
@@ -371,7 +521,8 @@
         function loadLocalProducts() {
             try {
                 const raw = localStorage.getItem(LOCAL_PROD_KEY);
-                return raw ? JSON.parse(raw) : [];
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed.map(normalizeProductInventory) : [];
             } catch (e) {
                 return [];
             }
@@ -379,7 +530,7 @@
 
         function saveLocalProducts(list) {
             try {
-                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list));
+                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list.map(normalizeProductInventory)));
             } catch (e) {
                 console.warn("Local storage quota notice:", e);
             }
@@ -406,6 +557,10 @@
                     name: 'Playera Gira CDMX — Negro',
                     eventName: 'Estadio GNP CDMX',
                     price: 380,
+                    customPrice: 350,
+                    customizable: true,
+                    stock: 5,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Playeras y Sudaderas',
                     subcategory: 'Playeras',
@@ -419,6 +574,10 @@
                     name: 'Termo Acero Inoxidable 1L — Panda',
                     eventName: 'Palacio de los Deportes',
                     price: 450,
+                    customPrice: 420,
+                    customizable: true,
+                    stock: 4,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Termos y Vasos',
                     subcategory: 'Termos',
@@ -432,6 +591,10 @@
                     name: 'Bolsa de Tela (Tote Bag) — Festival',
                     eventName: 'Vive Latino CDMX',
                     price: 190,
+                    customPrice: 180,
+                    customizable: true,
+                    stock: 6,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Bolsas y Accesorios',
                     subcategory: 'Bolsas de Tela (Tote Bags)',
@@ -445,41 +608,19 @@
                     name: 'Hoodie Edición Especial — CDMX',
                     eventName: 'Parque Naucalli',
                     price: 620,
+                    customPrice: 590,
+                    customizable: true,
+                    stock: 3,
+                    reserved: 1,
                     status: 'Apartado',
                     category: 'Playeras y Sudaderas',
                     subcategory: 'Hoodies',
-                    description: 'Talla M, felpa interior suave. Marcada como Apartado para probar validación de pago en Admin.',
+                    description: 'Talla M, felpa interior suave. 1 pieza apartada y 2 piezas sobrantes disponibles.',
                     images: [makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399')],
                     imageUrl: makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399'),
                     updatedAt: now - 30000
-                },
-                {
-                    id: 'sample-vaso-conmemorativo',
-                    name: 'Vaso Conmemorativo con Popote',
-                    eventName: 'Auditorio Nacional',
-                    price: 160,
-                    status: 'Disponible',
-                    category: 'Termos y Vasos',
-                    subcategory: 'Vasos Conmemorativos',
-                    description: 'Recuerdo de evento en la CDMX en excelente estado, listo para entrega.',
-                    images: [makePlaceholder('Vaso Conmemorativo')],
-                    imageUrl: makePlaceholder('Vaso Conmemorativo'),
-                    updatedAt: now - 20000
-                },
-                {
-                    id: 'sample-gorra-pines',
-                    name: 'Gorra Snapback + Pin Metálico',
-                    eventName: 'Evento Especial CDMX',
-                    price: 320,
-                    status: 'Disponible',
-                    category: 'Bolsas y Accesorios',
-                    subcategory: 'Gorras',
-                    description: 'Gorra bordada acompañada de pin coleccionable del evento.',
-                    images: [makePlaceholder('Gorra + Pin')],
-                    imageUrl: makePlaceholder('Gorra + Pin'),
-                    updatedAt: now - 10000
                 }
-            ];
+            ].map(normalizeProductInventory);
 
             saveLocalProducts(productsData);
         }
@@ -508,8 +649,8 @@
 
         syncChannel.onmessage = (event) => {
             if (event.data.type === 'SYNC_ALL' || event.data.type === 'SYNC_PRODUCTS') {
-                if (event.data.products) productsData = event.data.products;
-                if (event.data.payload) productsData = event.data.payload;
+                const incoming = event.data.products || event.data.payload;
+                if (Array.isArray(incoming)) productsData = incoming.map(normalizeProductInventory);
                 if (event.data.categories) {
                     categoriesData = event.data.categories;
                     saveLocalCategories(categoriesData);
@@ -520,6 +661,10 @@
                 }
                 saveLocalProducts(productsData);
                 renderCatalog();
+                renderCustomBaseSelector();
+                if (!document.getElementById('cartModal').classList.contains('hidden')) {
+                    renderCartModal();
+                }
             } else if (event.data.type === 'SYNC_CATEGORIES') {
                 categoriesData = event.data.payload;
                 saveLocalCategories(categoriesData);
@@ -534,6 +679,7 @@
             if (e.key === LOCAL_PROD_KEY) {
                 productsData = loadLocalProducts();
                 renderCatalog();
+                renderCustomBaseSelector();
             } else if (e.key === LOCAL_CAT_KEY) {
                 categoriesData = loadLocalCategories();
                 renderCategoryFilters();
@@ -552,6 +698,7 @@
             applySettingsUI();
             renderCategoryFilters();
             renderCatalog();
+            renderCustomBaseSelector();
             syncChannel.postMessage({ type: 'REQUEST_SYNC' });
 
             try {
@@ -567,21 +714,22 @@
                 const prodRef = collection(db, 'artifacts', STORE_ID, 'public', 'data', 'products');
                 onSnapshot(prodRef, snap => {
                     const cloudProducts = [];
-                    snap.forEach(d => cloudProducts.push({ id: d.id, ...d.data() }));
+                    snap.forEach(d => cloudProducts.push(normalizeProductInventory({ id: d.id, ...d.data() })));
 
                     if (cloudProducts.length > 0) {
                         const mergedMap = new Map();
-                        productsData.forEach(p => mergedMap.set(p.id, p));
+                        productsData.forEach(p => mergedMap.set(p.id, normalizeProductInventory(p)));
                         cloudProducts.forEach(p => {
                             const localItem = mergedMap.get(p.id);
                             if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
-                                mergedMap.set(p.id, p);
+                                mergedMap.set(p.id, normalizeProductInventory(p));
                             }
                         });
                         productsData = Array.from(mergedMap.values());
                         saveLocalProducts(productsData);
                     }
                     renderCatalog();
+                    renderCustomBaseSelector();
                 }, (err) => console.warn("Catalog fetch notice:", err));
 
                 const catRef = doc(db, 'artifacts', STORE_ID, 'public', 'data', 'config', 'categories');
@@ -605,14 +753,315 @@
         });
 
         window.switchTab = function(tabId) {
-            ['catalog', 'payments'].forEach(t => {
+            ['catalog', 'custom', 'payments'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`nav-${t}`).className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-2 text-slate-400 hover:text-white";
+                document.getElementById(`nav-${t}`).className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition flex items-center gap-1.5 text-slate-400 hover:text-white whitespace-nowrap";
             });
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            document.getElementById(`nav-${tabId}`).className = "px-3.5 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-2 bg-primary text-slate-950 shadow-md";
+            document.getElementById(`nav-${tabId}`).className = "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center gap-1.5 bg-primary text-slate-950 shadow-md whitespace-nowrap";
+            if (tabId === 'custom') {
+                renderCustomBaseSelector();
+                updateCustomPreview();
+            }
         };
 
+        // ================= CUSTOMIZATION MODULE =================
+        function getCustomizableItems() {
+            const customItems = productsData
+                .map(normalizeProductInventory)
+                .filter(p => p.customizable !== false);
+
+            if (customItems.length > 0) return customItems;
+
+            // Bases genéricas de respaldo si aún no hay artículos cargados
+            return [
+                { id: 'base-playera', name: 'Playera Personalizada', subcategory: 'Playeras', customPrice: 350, price: 350, images: [] },
+                { id: 'base-termo', name: 'Termo Personalizado 1L', subcategory: 'Termos', customPrice: 420, price: 420, images: [] },
+                { id: 'base-bolsa', name: 'Bolsa de Tela (Tote Bag)', subcategory: 'Bolsas de Tela', customPrice: 180, price: 180, images: [] }
+            ];
+        }
+
+        function generateGenericBaseSvg(item) {
+            const sub = (item.subcategory || item.name || '').toLowerCase();
+            let shape = '';
+            if (sub.includes('termo') || sub.includes('vaso') || sub.includes('cilindro')) {
+                shape = `
+                    <rect x="235" y="95" width="130" height="38" rx="10" fill="#334155"/>
+                    <rect x="215" y="130" width="170" height="360" rx="28" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+                `;
+            } else if (sub.includes('bolsa') || sub.includes('tote')) {
+                shape = `
+                    <path d="M235 170 C235 85, 365 85, 365 170" fill="none" stroke="#d6c7b2" stroke-width="16" stroke-linecap="round"/>
+                    <rect x="175" y="170" width="250" height="310" rx="14" fill="#e7dcc8" stroke="#cbbba0" stroke-width="4"/>
+                `;
+            } else {
+                // Playera / Hoodie por defecto
+                shape = `
+                    <path d="M185 120 L245 105 C265 130, 335 130, 355 105 L415 120 L485 195 L435 245 L395 205 L395 485 L205 485 L205 205 L165 245 L115 195 Z" fill="#1e293b" stroke="#475569" stroke-width="4"/>
+                `;
+            }
+
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                <svg xmlns="http://www.w3.org/2000/svg" width="600" height="600" viewBox="0 0 600 600">
+                    <rect width="600" height="600" fill="#090D16"/>
+                    ${shape}
+                </svg>
+            `)}`;
+        }
+
+        function renderCustomBaseSelector() {
+            const grid = document.getElementById('customBaseGrid');
+            if (!grid) return;
+            const list = getCustomizableItems();
+            if (!selectedCustomBaseId || !list.some(i => i.id === selectedCustomBaseId)) {
+                selectedCustomBaseId = list[0].id;
+            }
+
+            let html = '';
+            list.forEach(item => {
+                const isSelected = item.id === selectedCustomBaseId;
+                const unitPrice = Number(item.customPrice || item.price || 0);
+                const imgs = (item.images && item.images.length > 0) ? item.images : (item.imageUrl ? [item.imageUrl] : []);
+                const thumb = imgs.length > 0 ? imgs[0] : generateGenericBaseSvg(item);
+
+                html += `
+                    <button type="button" onclick="selectCustomBase('${item.id}')" class="text-left p-2.5 rounded-2xl border transition flex flex-col justify-between gap-2 ${isSelected ? 'bg-emerald-500/15 border-emerald-400 shadow-lg shadow-emerald-500/10' : 'bg-slate-950 border-darkBorder hover:border-slate-600'}">
+                        <div class="w-full h-20 rounded-xl overflow-hidden bg-slate-900">
+                            <img src="${thumb}" alt="${item.name}" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <p class="text-xs font-bold text-white line-clamp-1">${item.name}</p>
+                            <p class="text-[11px] font-extrabold text-emerald-400">$${unitPrice.toFixed(2)} c/u</p>
+                        </div>
+                    </button>
+                `;
+            });
+            grid.innerHTML = html;
+            loadSelectedCustomBaseImage();
+            updateCustomTotal();
+        }
+
+        window.selectCustomBase = function(id) {
+            selectedCustomBaseId = id;
+            renderCustomBaseSelector();
+        };
+
+        function loadSelectedCustomBaseImage() {
+            const list = getCustomizableItems();
+            const item = list.find(i => i.id === selectedCustomBaseId) || list[0];
+            if (!item) return;
+
+            const subtitle = document.getElementById('previewBaseSubtitle');
+            if (subtitle) {
+                subtitle.textContent = `Base: ${item.name} ($${Number(item.customPrice || item.price || 0).toFixed(2)} c/u)`;
+            }
+
+            const imgs = (item.images && item.images.length > 0) ? item.images : (item.imageUrl ? [item.imageUrl] : []);
+            const targetSrc = imgs.length > 0 ? imgs[0] : generateGenericBaseSvg(item);
+
+            if (targetSrc === customBaseImageSrc && customBaseImageObj) {
+                updateCustomPreview();
+                return;
+            }
+
+            customBaseImageSrc = targetSrc;
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+                customBaseImageObj = img;
+                updateCustomPreview();
+            };
+            img.onerror = () => {
+                const fallback = new Image();
+                fallback.onload = () => {
+                    customBaseImageObj = fallback;
+                    updateCustomPreview();
+                };
+                fallback.src = generateGenericBaseSvg(item);
+            };
+            img.src = targetSrc;
+        }
+
+        window.handleCustomImageUpload = function(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+
+            document.getElementById('customImgFileLabel').textContent = file.name;
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    customUploadedImageObj = img;
+                    document.getElementById('clearCustomImgBtn').classList.remove('hidden');
+                    document.getElementById('customImgScaleControl').classList.remove('hidden');
+                    updateCustomPreview();
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.clearCustomImage = function() {
+            customUploadedImageObj = null;
+            const fileInput = document.getElementById('customDesignFile');
+            if (fileInput) fileInput.value = '';
+            document.getElementById('customImgFileLabel').textContent = 'Seleccionar imagen PNG / JPG';
+            document.getElementById('clearCustomImgBtn').classList.add('hidden');
+            document.getElementById('customImgScaleControl').classList.add('hidden');
+            updateCustomPreview();
+        };
+
+        window.updateCustomPreview = function() {
+            const canvas = document.getElementById('customPreviewCanvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width;
+            const H = canvas.height;
+
+            ctx.clearRect(0, 0, W, H);
+            ctx.fillStyle = '#090D16';
+            ctx.fillRect(0, 0, W, H);
+
+            // 1. Dibujar producto base
+            if (customBaseImageObj) {
+                const ratio = Math.min(W / customBaseImageObj.width, H / customBaseImageObj.height);
+                const drawW = customBaseImageObj.width * ratio;
+                const drawH = customBaseImageObj.height * ratio;
+                const offsetX = (W - drawW) / 2;
+                const offsetY = (H - drawH) / 2;
+                ctx.drawImage(customBaseImageObj, offsetX, offsetY, drawW, drawH);
+            }
+
+            // 2. Calcular coordenadas según posición
+            const pos = document.getElementById('customPositionSelect')?.value || 'center';
+            const centerY = pos === 'top' ? H * 0.36 : (pos === 'bottom' ? H * 0.64 : H * 0.50);
+
+            const scalePct = parseInt(document.getElementById('customImgScale')?.value || '42', 10);
+            const scaleLabel = document.getElementById('customImgScaleVal');
+            if (scaleLabel) scaleLabel.textContent = `${scalePct}%`;
+
+            const textVal = (document.getElementById('customTextInput')?.value || '').trim();
+            const textColor = document.getElementById('customTextColor')?.value || '#FFFFFF';
+            const hexLabel = document.getElementById('customTextColorHex');
+            if (hexLabel) hexLabel.textContent = textColor.toUpperCase();
+
+            // 3. Dibujar área guía sutil si no hay imagen ni texto
+            if (!customUploadedImageObj && !textVal) {
+                ctx.save();
+                ctx.strokeStyle = 'rgba(16, 185, 129, 0.45)';
+                ctx.setLineDash([8, 6]);
+                ctx.lineWidth = 2;
+                ctx.strokeRect(W * 0.32, centerY - 75, W * 0.36, 150);
+                ctx.fillStyle = 'rgba(248, 250, 252, 0.75)';
+                ctx.font = '600 16px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('Tu imagen o texto aparecerá aquí', W / 2, centerY + 5);
+                ctx.restore();
+                return;
+            }
+
+            let textY = centerY;
+
+            // 4. Dibujar imagen personalizada
+            if (customUploadedImageObj) {
+                const maxBox = W * (scalePct / 100);
+                const imgRatio = Math.min(maxBox / customUploadedImageObj.width, maxBox / customUploadedImageObj.height);
+                const imgW = customUploadedImageObj.width * imgRatio;
+                const imgH = customUploadedImageObj.height * imgRatio;
+                const imgX = (W - imgW) / 2;
+                const imgY = textVal ? (centerY - imgH / 2 - 22) : (centerY - imgH / 2);
+
+                ctx.save();
+                ctx.shadowColor = 'rgba(0,0,0,0.45)';
+                ctx.shadowBlur = 12;
+                ctx.drawImage(customUploadedImageObj, imgX, imgY, imgW, imgH);
+                ctx.restore();
+
+                textY = imgY + imgH + 34;
+            }
+
+            // 5. Dibujar texto personalizado
+            if (textVal) {
+                ctx.save();
+                ctx.font = '800 28px Inter, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.75)';
+                ctx.strokeText(textVal, W / 2, textY, W * 0.72);
+                ctx.fillStyle = textColor;
+                ctx.fillText(textVal, W / 2, textY, W * 0.72);
+                ctx.restore();
+            }
+        };
+
+        window.downloadCustomPreview = function() {
+            const canvas = document.getElementById('customPreviewCanvas');
+            if (!canvas) return;
+            const link = document.createElement('a');
+            link.download = `diseno-bazar-los-pandas-${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast("Vista Guardada", "Se descargó la vista previa de tu diseño", "success");
+        };
+
+        window.changeCustomQty = function(delta) {
+            const input = document.getElementById('customQtyInput');
+            if (!input) return;
+            const current = Math.max(1, parseInt(input.value || '1', 10));
+            input.value = Math.max(1, current + delta);
+            updateCustomTotal();
+        };
+
+        window.updateCustomTotal = function() {
+            const list = getCustomizableItems();
+            const item = list.find(i => i.id === selectedCustomBaseId) || list[0];
+            const unitPrice = Number(item?.customPrice || item?.price || 0);
+            const qty = Math.max(1, parseInt(document.getElementById('customQtyInput')?.value || '1', 10));
+            const subEl = document.getElementById('customSubtotalDisplay');
+            if (subEl) subEl.textContent = `$${(unitPrice * qty).toFixed(2)}`;
+        };
+
+        window.addCustomItemToCart = function() {
+            const list = getCustomizableItems();
+            const baseItem = list.find(i => i.id === selectedCustomBaseId) || list[0];
+            if (!baseItem) return;
+
+            const textVal = (document.getElementById('customTextInput')?.value || '').trim();
+            const notesVal = (document.getElementById('customNotesInput')?.value || '').trim();
+            const hasImage = Boolean(customUploadedImageObj);
+
+            if (!textVal && !hasImage) {
+                showToast("Falta Diseño", "Sube una imagen o escribe un texto para personalizar", "error");
+                return;
+            }
+
+            const qty = Math.max(1, parseInt(document.getElementById('customQtyInput')?.value || '1', 10));
+            const unitPrice = Number(baseItem.customPrice || baseItem.price || 0);
+            const canvas = document.getElementById('customPreviewCanvas');
+            const previewDataUrl = canvas ? canvas.toDataURL('image/jpeg', 0.8) : '';
+
+            const detailParts = [];
+            if (hasImage) detailParts.push('Con imagen propia');
+            if (textVal) detailParts.push(`Texto: "${textVal}"`);
+            if (notesVal) detailParts.push(`Notas: ${notesVal}`);
+
+            cartItems.push({
+                id: 'custom-' + Date.now(),
+                isCustom: true,
+                name: `${baseItem.name} (Personalizado)`,
+                subcategory: baseItem.subcategory || 'Personalizado',
+                price: unitPrice,
+                qty: qty,
+                customSummary: detailParts.join(' • '),
+                images: previewDataUrl ? [previewDataUrl] : []
+            });
+
+            updateCartBadge();
+            showToast("Personalizado Agregado", `${qty} pza(s) de "${baseItem.name}" añadidas al apartado`, "success");
+        };
+
+        // ================= CATALOG & CART LOGIC =================
         function renderCategoryFilters() {
             const container = document.getElementById('categoryFilters');
             if (!container) return;
@@ -696,8 +1145,11 @@
             const searchEl = document.getElementById('searchInput');
             const query = searchEl ? searchEl.value.toLowerCase() : '';
 
-            const available = productsData.filter(p => p.status === 'Disponible');
-            const filtered = available.filter(p => {
+            const visibleProducts = productsData
+                .map(normalizeProductInventory)
+                .filter(p => p.stock > 0);
+
+            const filtered = visibleProducts.filter(p => {
                 const matchSearch = (p.name && p.name.toLowerCase().includes(query)) ||
                                     (p.description && p.description.toLowerCase().includes(query)) ||
                                     (p.eventName && p.eventName.toLowerCase().includes(query));
@@ -714,7 +1166,8 @@
             emptyState.classList.add('hidden');
 
             let html = '';
-            filtered.forEach(p => {
+            filtered.forEach(rawP => {
+                const p = normalizeProductInventory(rawP);
                 const images = (p.images && Array.isArray(p.images) && p.images.length > 0)
                     ? p.images
                     : (p.imageUrl ? [p.imageUrl] : []);
@@ -776,6 +1229,28 @@
                     `;
                 }
 
+                const stockBadgeHtml = p.remaining > 0
+                    ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 text-[11px] font-bold">
+                        <i class="fa-solid fa-box mr-1"></i>${p.remaining} ${p.remaining === 1 ? 'pieza sobrante' : 'piezas sobrantes'}
+                       </span>`
+                    : `<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-bold">
+                        <i class="fa-solid fa-clock mr-1"></i>0 sobrantes (Todo apartado)
+                       </span>`;
+
+                const reservedBadgeHtml = p.reserved > 0
+                    ? `<span class="px-2.5 py-1 rounded-lg bg-amber-500/15 text-amber-300 border border-amber-500/30 text-[11px] font-semibold">
+                        ${p.reserved} ${p.reserved === 1 ? 'apartada' : 'apartadas'}
+                       </span>`
+                    : '';
+
+                const actionButtonHtml = p.remaining > 0
+                    ? `<button onclick="addToCart('${p.id}')" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-extrabold text-slate-950 shadow-md flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-cart-plus"></i> Apartar
+                       </button>`
+                    : `<button disabled class="px-3.5 py-2 rounded-xl bg-slate-800 text-slate-500 text-xs font-bold cursor-not-allowed">
+                        Sin sobrantes
+                       </button>`;
+
                 html += `
                     <div class="bg-darkCard border border-darkBorder rounded-3xl overflow-hidden shadow-xl hover:border-emerald-500/60 transition flex flex-col justify-between">
                         <div>
@@ -786,17 +1261,19 @@
                                     ${p.eventName ? `<span class="px-2.5 py-1 rounded-full bg-emerald-500/90 text-slate-950 text-[11px] font-bold backdrop-blur-sm"><i class="fa-solid fa-location-dot mr-1"></i>${p.eventName}</span>` : ''}
                                 </div>
                             </div>
-                            <div class="p-5 space-y-2">
+                            <div class="p-5 space-y-2.5">
                                 <p class="text-[11px] font-semibold uppercase tracking-wider text-emerald-400">${p.category}</p>
                                 <h3 class="font-bold text-lg text-white leading-snug">${p.name}</h3>
                                 <p class="text-xs text-slate-400 line-clamp-2">${p.description || 'Mercancía conmemorativa de evento en CDMX.'}</p>
+                                <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                                    ${stockBadgeHtml}
+                                    ${reservedBadgeHtml}
+                                </div>
                             </div>
                         </div>
-                        <div class="p-5 pt-0 flex items-center justify-between">
+                        <div class="p-5 pt-0 flex items-center justify-between gap-2">
                             <span class="text-xl font-extrabold text-white">$${Number(p.price).toFixed(2)}</span>
-                            <button onclick="addToCart('${p.id}')" class="px-4 py-2 rounded-xl bg-amber-400 hover:bg-amber-300 text-xs font-extrabold text-slate-950 shadow-md flex items-center gap-1.5 transition">
-                                <i class="fa-solid fa-clock"></i> Apartar
-                            </button>
+                            ${actionButtonHtml}
                         </div>
                     </div>
                 `;
@@ -875,47 +1352,120 @@
             }
         });
 
-        window.addToCart = async function(id) {
-            const p = productsData.find(item => item.id === id);
-            if (!p) return;
-
-            p.status = 'Apartado';
-            p.updatedAt = Date.now();
+        async function syncProductReservation(p) {
+            const norm = normalizeProductInventory(p);
+            const idx = productsData.findIndex(item => item.id === norm.id);
+            if (idx >= 0) productsData[idx] = norm;
             saveLocalProducts(productsData);
             renderCatalog();
             syncChannel.postMessage({ type: 'SYNC_ALL', products: productsData, categories: categoriesData, settings: storeSettings });
 
             try {
-                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: 'Apartado', updatedAt: p.updatedAt });
+                if (db) {
+                    await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', norm.id), {
+                        stock: norm.stock,
+                        reserved: norm.reserved,
+                        status: norm.status,
+                        updatedAt: norm.updatedAt
+                    });
+                }
             } catch (err) {
-                console.warn("Apartado update error:", err);
+                console.warn("Reservation sync error:", err);
+            }
+        }
+
+        window.addToCart = async function(id) {
+            const idx = productsData.findIndex(item => item.id === id);
+            if (idx < 0) return;
+            const p = normalizeProductInventory(productsData[idx]);
+            if (p.remaining <= 0) {
+                showToast("Sin Piezas Sobrantes", "No quedan unidades disponibles para apartar", "error");
+                return;
             }
 
-            const existing = cartItems.find(item => item.id === id);
-            if (!existing) cartItems.push({ ...p, qty: 1 });
-            else existing.qty += 1;
+            p.reserved += 1;
+            p.status = 'Apartado';
+            p.updatedAt = Date.now();
+            await syncProductReservation(p);
+
+            const existing = cartItems.find(item => item.id === id && !item.isCustom);
+            if (!existing) {
+                cartItems.push({ ...p, isCustom: false, qty: 1 });
+            } else {
+                existing.qty += 1;
+                existing.stock = p.stock;
+                existing.reserved = p.reserved;
+            }
 
             updateCartBadge();
-            showToast("Apartado", `"${p.name}" apartado temporalmente`, "success");
+            showToast("Apartado", `1 pieza de "${p.name}" agregada al apartado`, "success");
+        };
+
+        window.updateCartItemQty = async function(id, delta) {
+            const cartItem = cartItems.find(item => item.id === id);
+            if (!cartItem) return;
+
+            // Si es un artículo personalizado, su cantidad es independiente del stock
+            if (cartItem.isCustom) {
+                if (delta < 0 && cartItem.qty <= 1) {
+                    cartItems = cartItems.filter(item => item.id !== id);
+                } else {
+                    cartItem.qty = Math.max(1, cartItem.qty + delta);
+                }
+                updateCartBadge();
+                renderCartModal();
+                return;
+            }
+
+            const prodIdx = productsData.findIndex(item => item.id === id);
+            if (prodIdx < 0) return;
+            const p = normalizeProductInventory(productsData[prodIdx]);
+
+            if (delta > 0) {
+                if (p.remaining <= 0) {
+                    showToast("Límite de Inventario", `Solo hay ${p.stock} piezas en total para "${p.name}"`, "error");
+                    return;
+                }
+                cartItem.qty += 1;
+                p.reserved += 1;
+                p.status = 'Apartado';
+            } else if (delta < 0) {
+                if (cartItem.qty <= 1) {
+                    await window.removeFromCart(id);
+                    return;
+                }
+                cartItem.qty -= 1;
+                p.reserved = Math.max(0, p.reserved - 1);
+                if (p.reserved === 0) p.status = 'Disponible';
+            }
+
+            p.updatedAt = Date.now();
+            await syncProductReservation(p);
+            updateCartBadge();
+            renderCartModal();
         };
 
         window.removeFromCart = async function(id) {
+            const cartItem = cartItems.find(item => item.id === id);
+            const qtyToRelease = cartItem ? cartItem.qty : 0;
+            const wasCustom = Boolean(cartItem?.isCustom);
             cartItems = cartItems.filter(item => item.id !== id);
-            const p = productsData.find(item => item.id === id);
-            if (p) {
-                p.status = 'Disponible';
-                p.updatedAt = Date.now();
+
+            if (!wasCustom) {
+                const prodIdx = productsData.findIndex(item => item.id === id);
+                if (prodIdx >= 0) {
+                    const p = normalizeProductInventory(productsData[prodIdx]);
+                    p.reserved = Math.max(0, p.reserved - qtyToRelease);
+                    if (p.reserved === 0 && p.stock > 0) {
+                        p.status = 'Disponible';
+                    }
+                    p.updatedAt = Date.now();
+                    await syncProductReservation(p);
+                }
             }
-            saveLocalProducts(productsData);
+
             updateCartBadge();
             renderCartModal();
-            renderCatalog();
-            syncChannel.postMessage({ type: 'SYNC_ALL', products: productsData, categories: categoriesData, settings: storeSettings });
-            try {
-                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: 'Disponible', updatedAt: Date.now() });
-            } catch (err) {
-                console.warn("Restore status error:", err);
-            }
         };
 
         function updateCartBadge() {
@@ -961,18 +1511,36 @@
                 total += sub;
                 const images = (item.images && item.images.length > 0) ? item.images : (item.imageUrl ? [item.imageUrl] : []);
                 const thumb = images.length > 0 ? images[0] : 'https://placehold.co/100x100/131A29/94A3B8?text=Merch';
+
+                let limitLabel = '';
+                let disablePlus = false;
+                if (item.isCustom) {
+                    limitLabel = `<span class="text-amber-300 font-semibold">Sobre pedido</span>`;
+                } else {
+                    const latestProd = normalizeProductInventory(productsData.find(p => p.id === item.id) || item);
+                    const maxAllowed = item.qty + latestProd.remaining;
+                    limitLabel = `Máx: ${maxAllowed}`;
+                    disablePlus = latestProd.remaining <= 0;
+                }
+
                 html += `
-                    <div class="py-3 flex items-center justify-between gap-4">
-                        <div class="flex items-center gap-3">
-                            <img src="${thumb}" class="w-12 h-12 rounded-xl object-cover">
-                            <div>
-                                <h4 class="font-semibold text-white text-sm">${item.name}</h4>
-                                <p class="text-xs text-slate-400">$${Number(item.price).toFixed(2)} x ${item.qty}</p>
+                    <div class="py-3 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <img src="${thumb}" class="w-12 h-12 rounded-xl object-cover shrink-0 border border-darkBorder">
+                            <div class="min-w-0">
+                                <h4 class="font-semibold text-white text-sm truncate">${item.name}</h4>
+                                <p class="text-xs text-slate-400">$${Number(item.price).toFixed(2)} c/u • ${limitLabel}</p>
+                                ${item.customSummary ? `<p class="text-[11px] text-emerald-300 truncate mt-0.5">${item.customSummary}</p>` : ''}
                             </div>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <span class="font-bold text-emerald-400 text-sm">$${sub.toFixed(2)}</span>
-                            <button onclick="removeFromCart('${item.id}')" class="text-rose-400 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                        <div class="flex items-center gap-2 shrink-0">
+                            <div class="flex items-center bg-slate-950 border border-darkBorder rounded-xl overflow-hidden">
+                                <button type="button" onclick="updateCartItemQty('${item.id}', -1)" class="px-2.5 py-1 text-slate-300 hover:bg-slate-800 hover:text-white text-xs font-bold transition">-</button>
+                                <span class="px-2.5 py-1 text-xs font-extrabold text-emerald-400">${item.qty}</span>
+                                <button type="button" onclick="updateCartItemQty('${item.id}', 1)" ${disablePlus ? 'disabled' : ''} class="px-2.5 py-1 text-slate-300 hover:bg-slate-800 hover:text-white disabled:opacity-35 disabled:cursor-not-allowed text-xs font-bold transition">+</button>
+                            </div>
+                            <span class="font-bold text-emerald-400 text-sm w-16 text-right">$${sub.toFixed(2)}</span>
+                            <button type="button" onclick="removeFromCart('${item.id}')" title="Quitar" class="text-rose-400 hover:text-rose-300 p-1.5"><i class="fa-solid fa-trash"></i></button>
                         </div>
                     </div>
                 `;
@@ -985,12 +1553,15 @@
             if (cartItems.length === 0) return;
             const cleanWa = normalizePhone(storeSettings.whatsapp);
             const whatsappNumber = `52${cleanWa}`;
-            let msg = "¡Hola! 🐼 He apartado la siguiente merch de conciertos en *Bazar Los Pandas*:\n\n";
+            let msg = "¡Hola! 🐼 Quiero confirmar el siguiente pedido en *Bazar Los Pandas*:\n\n";
             let total = 0;
             cartItems.forEach((item, i) => {
                 const sub = item.price * item.qty;
                 total += sub;
-                msg += `${i + 1}. *${item.name}* (${item.subcategory}) - *$${sub.toFixed(2)}*\n`;
+                msg += `${i + 1}. *${item.name}* (${item.qty} pza${item.qty > 1 ? 's' : ''}) - *$${sub.toFixed(2)}*\n`;
+                if (item.customSummary) {
+                    msg += `   ↳ _${item.customSummary}_\n`;
+                }
             });
             msg += `\n*Total:* *$${total.toFixed(2)}*\n\nQuiero coordinar mi pago (Tarjeta / Transferencia / Efectivo) y entrega en CDMX. ¡Gracias!`;
             window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(msg)}`, '_blank');

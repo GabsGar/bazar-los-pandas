@@ -134,7 +134,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Total Artículos</p>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Piezas en Stock</p>
                         <h3 id="statTotal" class="text-2xl font-bold text-white mt-1">0</h3>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-slate-800 border border-darkBorder flex items-center justify-center text-slate-200 text-xl">
@@ -143,7 +143,7 @@
                 </div>
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Disponibles</p>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Sobrantes Libres</p>
                         <h3 id="statAvailable" class="text-2xl font-bold text-emerald-400 mt-1">0</h3>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 text-xl">
@@ -152,7 +152,7 @@
                 </div>
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Apartados</p>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Piezas Apartadas</p>
                         <h3 id="statReserved" class="text-2xl font-bold text-amber-400 mt-1">0</h3>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 text-xl">
@@ -161,7 +161,7 @@
                 </div>
                 <div class="bg-darkCard border border-darkBorder rounded-2xl p-5 shadow-lg flex items-center justify-between">
                     <div>
-                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Merch</p>
+                        <p class="text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Inventario</p>
                         <h3 id="statValue" class="text-2xl font-bold text-emerald-300 mt-1">$0.00</h3>
                     </div>
                     <div class="w-12 h-12 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-300 text-xl">
@@ -200,12 +200,36 @@
                                 <input type="number" step="0.01" id="prodPrice" required placeholder="0.00" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Estado</label>
-                                <select id="prodStatus" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
-                                    <option value="Disponible">Disponible</option>
-                                    <option value="Apartado">Apartado</option>
-                                </select>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Inventario (Stock)</label>
+                                <input type="number" min="0" step="1" id="prodStock" value="1" required class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
                             </div>
+                        </div>
+
+                        <!-- Personalización Toggle -->
+                        <div class="bg-slate-950/80 border border-darkBorder rounded-2xl p-3.5 space-y-3">
+                            <label class="flex items-center justify-between cursor-pointer">
+                                <span class="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-wand-magic-sparkles"></i> Disponible en módulo Personalizar
+                                </span>
+                                <input type="checkbox" id="prodCustomizable" checked onchange="toggleCustomPriceField()" class="w-4 h-4 accent-emerald-400 rounded cursor-pointer">
+                            </label>
+                            <div id="customPriceBox">
+                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Precio Personalizado ($) <span class="text-slate-500 font-normal">(Opcional, usa precio base si está vacío)</span></label>
+                                <input type="number" step="0.01" id="prodCustomPrice" placeholder="Ej. 350.00" class="w-full bg-slate-900 border border-darkBorder rounded-xl px-3 py-2 text-xs text-slate-100 focus:outline-none focus:border-amber-400 transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1.5 uppercase tracking-wider">Estado</label>
+                            <select id="prodStatus" onchange="handleFormStatusChange()" class="w-full bg-slate-950 border border-darkBorder rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-primary transition">
+                                <option value="Disponible">Disponible</option>
+                                <option value="Apartado">Apartado</option>
+                            </select>
+                        </div>
+
+                        <div id="formReservedBox" class="hidden">
+                            <label class="block text-xs font-semibold text-amber-300 mb-1.5 uppercase tracking-wider">Piezas Apartadas</label>
+                            <input type="number" min="0" step="1" id="prodReserved" value="1" class="w-full bg-slate-950 border border-amber-500/40 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-400 transition">
                         </div>
 
                         <div class="grid grid-cols-2 gap-4">
@@ -261,6 +285,7 @@
                                 <tr>
                                     <th class="py-3 px-4">Artículo</th>
                                     <th class="py-3 px-4">Categoría / Evento</th>
+                                    <th class="py-3 px-4">Inventario</th>
                                     <th class="py-3 px-4">Precio</th>
                                     <th class="py-3 px-4">Estado</th>
                                     <th class="py-3 px-4 text-right">Acciones</th>
@@ -285,7 +310,6 @@
             </div>
 
             <form onsubmit="saveStoreSettings(event)" class="space-y-4">
-                <!-- WhatsApp Section -->
                 <div class="bg-slate-950/70 border border-darkBorder rounded-2xl p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1.5">
@@ -302,7 +326,6 @@
                     </div>
                 </div>
 
-                <!-- Bank Details Section -->
                 <div class="bg-slate-950/70 border border-darkBorder rounded-2xl p-4 space-y-3">
                     <span class="text-xs font-bold uppercase tracking-wider text-indigo-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-building-columns text-sm"></i> Cuenta para Transferencias SPEI
@@ -408,6 +431,30 @@
         let pendingConfirmCallback = null;
         const syncChannel = new BroadcastChannel('bazar_los_pandas_sync');
 
+        function normalizeProductInventory(p) {
+            const stock = Math.max(0, parseInt(p.stock ?? 1, 10) || 0);
+            let reserved = Math.max(0, parseInt(p.reserved ?? 0, 10) || 0);
+            if (p.status === 'Apartado' && reserved === 0 && stock > 0) {
+                reserved = 1;
+            }
+            if (reserved > stock) reserved = stock;
+            const remaining = Math.max(0, stock - reserved);
+            let status = p.status || 'Disponible';
+            if (stock === 0) status = 'Agotado';
+            else if (remaining === 0 && reserved > 0) status = 'Apartado';
+            else if (status === 'Agotado' && stock > 0) status = 'Disponible';
+
+            return {
+                ...p,
+                stock,
+                reserved,
+                remaining,
+                status,
+                customizable: p.customizable !== false,
+                customPrice: p.customPrice !== undefined && p.customPrice !== '' ? Number(p.customPrice) : Number(p.price || 0)
+            };
+        }
+
         function normalizePhone(raw) {
             const digits = String(raw || '').replace(/\D/g, '');
             if (digits.length === 12 && digits.startsWith('52')) return digits.slice(2);
@@ -462,7 +509,8 @@
         function loadLocalProducts() {
             try {
                 const raw = localStorage.getItem(LOCAL_PROD_KEY);
-                return raw ? JSON.parse(raw) : [];
+                const parsed = raw ? JSON.parse(raw) : [];
+                return Array.isArray(parsed) ? parsed.map(normalizeProductInventory) : [];
             } catch (e) {
                 return [];
             }
@@ -470,7 +518,7 @@
 
         function saveLocalProducts(list) {
             try {
-                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list));
+                localStorage.setItem(LOCAL_PROD_KEY, JSON.stringify(list.map(normalizeProductInventory)));
             } catch (e) {
                 console.warn("Local storage quota notice:", e);
             }
@@ -497,6 +545,10 @@
                     name: 'Playera Gira CDMX — Negro',
                     eventName: 'Estadio GNP CDMX',
                     price: 380,
+                    customPrice: 350,
+                    customizable: true,
+                    stock: 5,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Playeras y Sudaderas',
                     subcategory: 'Playeras',
@@ -510,6 +562,10 @@
                     name: 'Termo Acero Inoxidable 1L — Panda',
                     eventName: 'Palacio de los Deportes',
                     price: 450,
+                    customPrice: 420,
+                    customizable: true,
+                    stock: 4,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Termos y Vasos',
                     subcategory: 'Termos',
@@ -523,6 +579,10 @@
                     name: 'Bolsa de Tela (Tote Bag) — Festival',
                     eventName: 'Vive Latino CDMX',
                     price: 190,
+                    customPrice: 180,
+                    customizable: true,
+                    stock: 6,
+                    reserved: 0,
                     status: 'Disponible',
                     category: 'Bolsas y Accesorios',
                     subcategory: 'Bolsas de Tela (Tote Bags)',
@@ -536,41 +596,19 @@
                     name: 'Hoodie Edición Especial — CDMX',
                     eventName: 'Parque Naucalli',
                     price: 620,
+                    customPrice: 590,
+                    customizable: true,
+                    stock: 3,
+                    reserved: 1,
                     status: 'Apartado',
                     category: 'Playeras y Sudaderas',
                     subcategory: 'Hoodies',
-                    description: 'Talla M, felpa interior suave. Marcada como Apartado para probar validación de pago en Admin.',
+                    description: 'Talla M, felpa interior suave. 1 pieza apartada y 2 piezas sobrantes disponibles.',
                     images: [makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399')],
                     imageUrl: makePlaceholder('Hoodie CDMX', '1e1b4b', '34d399'),
                     updatedAt: now - 30000
-                },
-                {
-                    id: 'sample-vaso-conmemorativo',
-                    name: 'Vaso Conmemorativo con Popote',
-                    eventName: 'Auditorio Nacional',
-                    price: 160,
-                    status: 'Disponible',
-                    category: 'Termos y Vasos',
-                    subcategory: 'Vasos Conmemorativos',
-                    description: 'Recuerdo de evento en la CDMX en excelente estado, listo para entrega.',
-                    images: [makePlaceholder('Vaso Conmemorativo')],
-                    imageUrl: makePlaceholder('Vaso Conmemorativo'),
-                    updatedAt: now - 20000
-                },
-                {
-                    id: 'sample-gorra-pines',
-                    name: 'Gorra Snapback + Pin Metálico',
-                    eventName: 'Evento Especial CDMX',
-                    price: 320,
-                    status: 'Disponible',
-                    category: 'Bolsas y Accesorios',
-                    subcategory: 'Gorras',
-                    description: 'Gorra bordada acompañada de pin coleccionable del evento.',
-                    images: [makePlaceholder('Gorra + Pin')],
-                    imageUrl: makePlaceholder('Gorra + Pin'),
-                    updatedAt: now - 10000
                 }
-            ];
+            ].map(normalizeProductInventory);
 
             saveLocalProducts(productsData);
         }
@@ -598,6 +636,7 @@
         }
 
         function broadcastChanges() {
+            productsData = productsData.map(normalizeProductInventory);
             saveLocalProducts(productsData);
             saveLocalCategories(categoriesData);
             saveLocalSettings(storeSettings);
@@ -611,8 +650,8 @@
 
         syncChannel.onmessage = (event) => {
             if (event.data.type === 'SYNC_ALL' || event.data.type === 'SYNC_PRODUCTS') {
-                if (event.data.products) productsData = event.data.products;
-                if (event.data.payload) productsData = event.data.payload;
+                const incoming = event.data.products || event.data.payload;
+                if (Array.isArray(incoming)) productsData = incoming.map(normalizeProductInventory);
                 if (event.data.categories) categoriesData = event.data.categories;
                 if (event.data.settings) saveLocalSettings(event.data.settings);
                 saveLocalProducts(productsData);
@@ -724,15 +763,15 @@
             const prodRef = collection(db, 'artifacts', STORE_ID, 'public', 'data', 'products');
             onSnapshot(prodRef, snap => {
                 const cloudProducts = [];
-                snap.forEach(d => cloudProducts.push({ id: d.id, ...d.data() }));
+                snap.forEach(d => cloudProducts.push(normalizeProductInventory({ id: d.id, ...d.data() })));
 
                 if (cloudProducts.length > 0) {
                     const mergedMap = new Map();
-                    productsData.forEach(p => mergedMap.set(p.id, p));
+                    productsData.forEach(p => mergedMap.set(p.id, normalizeProductInventory(p)));
                     cloudProducts.forEach(p => {
                         const localItem = mergedMap.get(p.id);
                         if (!localItem || (p.updatedAt || 0) >= (localItem.updatedAt || 0)) {
-                            mergedMap.set(p.id, p);
+                            mergedMap.set(p.id, normalizeProductInventory(p));
                         }
                     });
                     productsData = Array.from(mergedMap.values());
@@ -768,7 +807,7 @@
                     saveLocalSettings(docSnap.data());
                 }
             }, (error) => {
-                console.warn("Settings listener notice:", error);
+                console.warn("Settings listener notice:", err);
             });
         }
 
@@ -834,6 +873,29 @@
             }
         };
 
+        window.toggleCustomPriceField = function() {
+            const checked = document.getElementById('prodCustomizable').checked;
+            const box = document.getElementById('customPriceBox');
+            if (checked) box.classList.remove('hidden');
+            else box.classList.add('hidden');
+        };
+
+        window.handleFormStatusChange = function() {
+            const st = document.getElementById('prodStatus').value;
+            const box = document.getElementById('formReservedBox');
+            const resInput = document.getElementById('prodReserved');
+            const stockVal = Math.max(0, parseInt(document.getElementById('prodStock').value || '0', 10));
+
+            if (st === 'Apartado') {
+                box.classList.remove('hidden');
+                const currentRes = parseInt(resInput.value || '0', 10);
+                resInput.value = currentRes > 0 ? Math.min(currentRes, stockVal) : Math.min(1, stockVal);
+            } else {
+                box.classList.add('hidden');
+                resInput.value = 0;
+            }
+        };
+
         window.renderAdmin = function() {
             renderAdminTable();
             renderStats();
@@ -845,20 +907,24 @@
             const tbody = document.getElementById('adminProductTableBody');
             if (!tbody) return;
             if (productsData.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-slate-500 text-sm">Sin mercancía registrada en Bazar Los Pandas.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="py-8 text-center text-slate-500 text-sm">Sin mercancía registrada en Bazar Los Pandas.</td></tr>`;
                 return;
             }
 
             let html = '';
-            productsData.forEach(p => {
+            productsData.forEach(rawP => {
+                const p = normalizeProductInventory(rawP);
                 const images = (p.images && Array.isArray(p.images) && p.images.length > 0) 
                     ? p.images 
                     : (p.imageUrl ? [p.imageUrl] : []);
                 const hasPhoto = images.length > 0;
                 const mainImg = hasPhoto ? images[0] : `https://placehold.co/100x100/131A29/64748B?text=Sin+Foto`;
-                let badge = p.status === 'Disponible' ? '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">Disponible</span>' :
-                            p.status === 'Apartado' ? '<span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold">Apartado</span>' :
-                            '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-400 text-xs font-semibold">Vendido</span>';
+
+                let badge = p.stock === 0
+                    ? '<span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-400 text-xs font-semibold">Agotado</span>'
+                    : p.reserved > 0
+                        ? '<span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400 text-xs font-semibold">Apartado</span>'
+                        : '<span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-semibold">Disponible</span>';
 
                 html += `
                     <tr class="hover:bg-slate-950/40 transition">
@@ -869,9 +935,9 @@
                                 ${hasPhoto ? `<div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs transition"><i class="fa-solid fa-expand"></i></div>` : ''}
                             </div>
                             <div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex flex-wrap items-center gap-1.5">
                                     <p class="font-semibold text-white text-sm">${p.name}</p>
-                                    ${!hasPhoto ? `<span onclick="editProduct('${p.id}')" class="cursor-pointer px-1.5 py-0.5 rounded bg-slate-800 hover:bg-primary/30 text-[10px] text-slate-400 hover:text-emerald-300 border border-slate-700 transition"><i class="fa-solid fa-camera mr-1"></i>Subir foto</span>` : ''}
+                                    ${p.customizable ? `<span class="px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300 border border-amber-400/30 text-[10px] font-semibold"><i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>Personalizable</span>` : ''}
                                 </div>
                                 <p class="text-xs text-slate-500 line-clamp-1">${p.description || 'Sin descripción'}</p>
                             </div>
@@ -880,12 +946,20 @@
                             <div>${p.category} / ${p.subcategory}</div>
                             ${p.eventName ? `<span class="inline-block mt-1 px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 text-[10px] font-semibold"><i class="fa-solid fa-music mr-1"></i>${p.eventName}</span>` : ''}
                         </td>
-                        <td class="py-3 px-4 font-bold text-emerald-400">$${Number(p.price).toFixed(2)}</td>
+                        <td class="py-3 px-4 text-xs space-y-1">
+                            <div class="font-bold text-white">Stock: ${p.stock}</div>
+                            <div class="text-emerald-400 font-semibold">Sobrantes: ${p.remaining}</div>
+                            ${p.reserved > 0 ? `<div class="text-amber-400 font-semibold">Apartados: ${p.reserved}</div>` : ''}
+                        </td>
+                        <td class="py-3 px-4 font-bold text-emerald-400">
+                            <div>$${Number(p.price).toFixed(2)}</div>
+                            ${p.customizable && p.customPrice && Number(p.customPrice) !== Number(p.price) ? `<div class="text-[11px] text-amber-300 font-normal">Pers: $${Number(p.customPrice).toFixed(2)}</div>` : ''}
+                        </td>
                         <td class="py-3 px-4">${badge}</td>
                         <td class="py-3 px-4 text-right flex items-center justify-end gap-2">
-                            ${p.status === 'Apartado' ? `<button onclick="markAsSold('${p.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs">Marcar Vendido</button>` : ''}
-                            <button onclick="toggleStatus('${p.id}')" title="Cambiar Estado" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-rotate"></i></button>
-                            <button onclick="editProduct('${p.id}')" title="Editar precio, descripción o fotos" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5">
+                            ${p.reserved > 0 ? `<button onclick="markAsSold('${p.id}')" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs whitespace-nowrap">Marcar Vendido (${p.reserved})</button>` : ''}
+                            <button onclick="toggleStatus('${p.id}')" title="Liberar Apartado / Pasar a Disponible" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300"><i class="fa-solid fa-rotate"></i></button>
+                            <button onclick="editProduct('${p.id}')" title="Editar stock, precio, descripción o fotos" class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-300 text-xs font-semibold flex items-center gap-1.5">
                                 <i class="fa-solid fa-pen"></i> Editar
                             </button>
                             <button onclick="deleteProduct('${p.id}')" title="Eliminar" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-600 text-rose-400 hover:text-white"><i class="fa-solid fa-trash"></i></button>
@@ -897,11 +971,16 @@
         }
 
         function renderStats() {
-            document.getElementById('statTotal').textContent = productsData.length;
-            document.getElementById('statAvailable').textContent = productsData.filter(p => p.status === 'Disponible').length;
-            document.getElementById('statReserved').textContent = productsData.filter(p => p.status === 'Apartado').length;
-            const val = productsData.reduce((acc, p) => acc + (p.status !== 'Vendido' ? Number(p.price || 0) : 0), 0);
-            document.getElementById('statValue').textContent = `$${val.toFixed(2)}`;
+            const normalized = productsData.map(normalizeProductInventory);
+            const totalStock = normalized.reduce((acc, p) => acc + p.stock, 0);
+            const totalRemaining = normalized.reduce((acc, p) => acc + p.remaining, 0);
+            const totalReserved = normalized.reduce((acc, p) => acc + p.reserved, 0);
+            const totalValue = normalized.reduce((acc, p) => acc + (p.stock * Number(p.price || 0)), 0);
+
+            document.getElementById('statTotal').textContent = totalStock;
+            document.getElementById('statAvailable').textContent = totalRemaining;
+            document.getElementById('statReserved').textContent = totalReserved;
+            document.getElementById('statValue').textContent = `$${totalValue.toFixed(2)}`;
         }
 
         function renderCategoryDropdowns() {
@@ -1054,20 +1133,35 @@
             const id = existingId || 'merch-' + Date.now();
             const catVal = document.getElementById('prodCategory').value || Object.keys(categoriesData)[0] || 'Playeras y Sudaderas';
             const subVal = document.getElementById('prodSubcategory').value || (categoriesData[catVal] && categoriesData[catVal][0]) || 'General';
+            const stock = Math.max(0, parseInt(document.getElementById('prodStock').value || '0', 10));
+            const basePrice = parseFloat(document.getElementById('prodPrice').value) || 0;
+            const customizable = document.getElementById('prodCustomizable').checked;
+            const rawCustomPrice = document.getElementById('prodCustomPrice').value;
+            const customPrice = rawCustomPrice !== '' ? parseFloat(rawCustomPrice) : basePrice;
 
-            const product = {
+            const rawStatus = document.getElementById('prodStatus').value || 'Disponible';
+            let reserved = rawStatus === 'Apartado'
+                ? Math.max(1, parseInt(document.getElementById('prodReserved').value || '1', 10))
+                : 0;
+            if (reserved > stock) reserved = stock;
+
+            const product = normalizeProductInventory({
                 id: id,
                 name: document.getElementById('prodName').value.trim(),
                 eventName: document.getElementById('prodEvent').value.trim(),
-                price: parseFloat(document.getElementById('prodPrice').value) || 0,
-                status: document.getElementById('prodStatus').value || 'Disponible',
+                price: basePrice,
+                customizable,
+                customPrice,
+                stock,
+                reserved,
+                status: stock === 0 ? 'Agotado' : (reserved > 0 ? 'Apartado' : 'Disponible'),
                 category: catVal,
                 subcategory: subVal,
                 description: document.getElementById('prodDesc').value.trim(),
                 images: currentProductImages.slice(0, 5),
                 imageUrl: currentProductImages.length > 0 ? currentProductImages[0] : '',
                 updatedAt: Date.now()
-            };
+            });
 
             const existingIndex = productsData.findIndex(item => item.id === id);
             if (existingIndex >= 0) {
@@ -1084,7 +1178,7 @@
                     await setDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), product, { merge: true });
                     showToast(
                         isEditing ? "Artículo Actualizado" : "Artículo Agregado",
-                        isEditing ? "Los cambios se guardaron exitosamente" : "Merch publicada en Bazar Los Pandas",
+                        `Stock: ${product.stock} • Sobrantes: ${product.remaining}`,
                         "success"
                     );
                 } else {
@@ -1098,13 +1192,23 @@
         };
 
         window.editProduct = function(id) {
-            const p = productsData.find(item => item.id === id);
-            if (!p) return;
+            const raw = productsData.find(item => item.id === id);
+            if (!raw) return;
+            const p = normalizeProductInventory(raw);
+
             document.getElementById('editProductId').value = p.id;
             document.getElementById('prodName').value = p.name;
             document.getElementById('prodEvent').value = p.eventName || '';
             document.getElementById('prodPrice').value = p.price;
-            document.getElementById('prodStatus').value = p.status;
+            document.getElementById('prodStock').value = p.stock;
+            document.getElementById('prodCustomizable').checked = p.customizable !== false;
+            document.getElementById('prodCustomPrice').value = p.customPrice !== undefined ? p.customPrice : p.price;
+            toggleCustomPriceField();
+
+            document.getElementById('prodStatus').value = p.reserved > 0 ? 'Apartado' : 'Disponible';
+            document.getElementById('prodReserved').value = p.reserved;
+            handleFormStatusChange();
+
             document.getElementById('prodCategory').value = p.category;
             updateSubcategoryDropdown();
             document.getElementById('prodSubcategory').value = p.subcategory;
@@ -1128,6 +1232,11 @@
         window.resetProductForm = function() {
             document.getElementById('productForm').reset();
             document.getElementById('editProductId').value = '';
+            document.getElementById('prodStock').value = '1';
+            document.getElementById('prodReserved').value = '0';
+            document.getElementById('prodCustomizable').checked = true;
+            toggleCustomPriceField();
+            document.getElementById('formReservedBox').classList.add('hidden');
             document.getElementById('formTitle').innerHTML = `<i class="fa-solid fa-plus-circle text-emerald-400"></i> Nueva Merch`;
             document.getElementById('submitProductBtn').innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Guardar en Catálogo`;
             document.getElementById('cancelEditBtn').classList.add('hidden');
@@ -1137,38 +1246,81 @@
         };
 
         window.toggleStatus = async function(id) {
-            const p = productsData.find(item => item.id === id);
-            if (!p) return;
-            const next = p.status === 'Disponible' ? 'Apartado' : 'Disponible';
-            p.status = next;
+            const idx = productsData.findIndex(item => item.id === id);
+            if (idx < 0) return;
+            const p = normalizeProductInventory(productsData[idx]);
+
+            if (p.reserved > 0) {
+                p.reserved = 0;
+                p.status = p.stock > 0 ? 'Disponible' : 'Agotado';
+            } else if (p.stock > 0) {
+                p.reserved = 1;
+                p.status = 'Apartado';
+            }
+
             p.updatedAt = Date.now();
+            productsData[idx] = normalizeProductInventory(p);
             broadcastChanges();
             renderAdmin();
+
             try {
-                if (db) await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), { status: next, updatedAt: p.updatedAt });
-                showToast("Estado Actualizado", `Ahora está ${next}`, "success");
+                if (db) {
+                    await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), {
+                        reserved: productsData[idx].reserved,
+                        status: productsData[idx].status,
+                        updatedAt: productsData[idx].updatedAt
+                    });
+                }
+                showToast("Estado Actualizado", `${productsData[idx].name}: ${productsData[idx].remaining} sobrantes • ${productsData[idx].reserved} apartados`, "success");
             } catch (err) {
                 console.warn("Update status error:", err);
-                showToast("Estado Actualizado", `Ahora está ${next}`, "success");
+                showToast("Estado Actualizado", `${productsData[idx].name}: ${productsData[idx].remaining} sobrantes`, "success");
             }
         };
 
         window.markAsSold = function(id) {
-            openConfirmModal("Marcar Vendido", "¿Confirmas que el pago fue verificado para retirar el artículo del catálogo?", async () => {
-                productsData = productsData.filter(item => item.id !== id);
-                broadcastChanges();
-                renderAdmin();
-                try {
-                    if (db) await deleteDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id));
-                } catch (err) {
-                    console.warn("Delete error:", err);
+            const raw = productsData.find(item => item.id === id);
+            if (!raw) return;
+            const p = normalizeProductInventory(raw);
+            const qtyToSell = p.reserved > 0 ? p.reserved : 1;
+
+            openConfirmModal(
+                "Confirmar Venta",
+                `¿Confirmas el pago de ${qtyToSell} ${qtyToSell === 1 ? 'pieza' : 'piezas'} de "${p.name}"? Se descontará del inventario (Stock actual: ${p.stock}).`,
+                async () => {
+                    const idx = productsData.findIndex(item => item.id === id);
+                    if (idx < 0) return;
+                    const updated = normalizeProductInventory({
+                        ...productsData[idx],
+                        stock: Math.max(0, p.stock - qtyToSell),
+                        reserved: Math.max(0, p.reserved - qtyToSell),
+                        updatedAt: Date.now()
+                    });
+                    updated.status = updated.stock === 0 ? 'Agotado' : (updated.reserved > 0 ? 'Apartado' : 'Disponible');
+                    productsData[idx] = updated;
+
+                    broadcastChanges();
+                    renderAdmin();
+
+                    try {
+                        if (db) {
+                            await updateDoc(doc(db, 'artifacts', STORE_ID, 'public', 'data', 'products', id), {
+                                stock: updated.stock,
+                                reserved: updated.reserved,
+                                status: updated.status,
+                                updatedAt: updated.updatedAt
+                            });
+                        }
+                    } catch (err) {
+                        console.warn("Sold update error:", err);
+                    }
+                    showToast("Venta Registrada", `Se descontaron ${qtyToSell} pza(s). Stock restante: ${updated.stock}`, "success");
                 }
-                showToast("Completado", "Artículo marcado como vendido y retirado", "success");
-            });
+            );
         };
 
         window.deleteProduct = function(id) {
-            openConfirmModal("Eliminar", "¿Eliminar este artículo del inventario?", async () => {
+            openConfirmModal("Eliminar Artículo", "¿Eliminar este artículo por completo del inventario?", async () => {
                 productsData = productsData.filter(item => item.id !== id);
                 broadcastChanges();
                 renderAdmin();
@@ -1177,7 +1329,7 @@
                 } catch (err) {
                     console.warn("Delete error:", err);
                 }
-                showToast("Eliminado", "Artículo eliminado del catálogo", "success");
+                showToast("Eliminado", "Artículo eliminado del inventario", "success");
             });
         };
 
